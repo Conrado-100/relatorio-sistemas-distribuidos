@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistemas Distribuídos — Curso Interativo</title>
+    <meta name="description" content="Plataforma de estudo interativa para a disciplina de Sistemas Distribuídos do curso Tecnólogo em Sistemas para Internet.">
+    
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Principal -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <span class="brand-icon">⚡</span>
+                <div class="brand-text">
+                    <h1>Sistemas Distribuídos</h1>
+                    <span class="brand-sub">Tecnólogo em Sistemas para Internet</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Alternar modo escuro" title="Alternar Modo Claro/Escuro">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button id="reset-progress" class="btn-outline-danger" title="Reiniciar todo o progresso do curso">
+                    <span>↺ Resetar Curso</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="main-container">
+
+        <!-- Banner de Boas-vindas e Visão Geral -->
+        <section class="hero-card">
+            <div class="hero-content">
+                <h2>Plataforma Interativa de Aprendizagem</h2>
+                <p>
+                    Aprenda desde os conceitos fundamentais de gerenciamento de processos e concorrência em SO até a arquitetura de middleware, sistemas P2P e Sistemas de Arquivos Distribuídos (DFS).
+                </p>
+                
+                <div class="hero-instructions">
+                    <div class="instruction-item">
+                        <span class="step-num">1</span>
+                        <span>Estude o conteúdo teórico de cada módulo.</span>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="step-num">2</span>
+                        <span>Realize os quizzes de fixação (mínimo de 70% para concluir).</span>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="step-num">3</span>
+                        <span>Conclua os 4 módulos para liberar o Simulado Final.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Progresso Global -->
+            <div class="global-progress-card">
+                <h3>Seu Progresso Global</h3>
+                <div class="progress-circle-container">
+                    <div class="progress-text-display">
+                        <span id="global-percentage">0%</span>
+                        <small>Concluído</small>
+                    </div>
+                </div>
+                
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-bg">
+                        <div id="global-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="stats-summary">
+                    <div class="stat-box">
+                        <span class="stat-number" id="completed-modules-count">0/4</span>
+                        <span class="stat-label">Módulos Concluídos</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" id="final-exam-status">Bloqueado</span>
+                        <span class="stat-label">Simulado Final</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grade de Módulos -->
+        <section class="modules-section">
+            <div class="section-title-group">
+                <h2>Módulos do Curso</h2>
+                <p>Siga a ordem pedagógica para garantir a assimilação contínua dos conceitos.</p>
+            </div>
+
+            <div id="modules-grid" class="modules-grid">
+                <!-- Cards dos Módulos serão renderizados dinamicamente via app.js -->
+            </div>
+        </section>
+
+        <!-- Seção do Simulado Final -->
+        <section class="final-exam-section">
+            <div id="final-exam-card" class="exam-card locked">
+                <div class="exam-badge" id="exam-badge">🔒 Bloqueado</div>
+                <div class="exam-content">
+                    <h3>Questões Finais — Avaliação Abrangente</h3>
+                    <p id="exam-description">
+                        Este simulado cobre todo o conteúdo do curso (Módulos 1 ao 4) com questões objetivas e discursivas avaliadas por conceitos. Complete todos os módulos com pelo menos 70% de aproveitamento para liberar o acesso.
+                    </p>
+                </div>
+                <div class="exam-action">
+                    <a id="exam-button" href="questoes-finais.html" class="btn-primary disabled" aria-disabled="true">
+                        Iniciar Simulado Final
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <p>Sistemas Distribuídos — Material Didático para Nível Técnico e Superior.</p>
+            <p><small>Desenvolvido estritamente com base no conteúdo programático das Aulas 01, 02 e 03.</small></p>
+        </div>
+    </footer>
+
+    <!-- Scripts JavaScript -->
+    <script src="js/progress.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
