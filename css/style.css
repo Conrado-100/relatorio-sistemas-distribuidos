@@ -1,0 +1,577 @@
+/* ==========================================================================
+   1. VARIÁVEIS CSS E DESIGN SYSTEM (MODO CLARO E ESCURO)
+   ========================================================================== */
+:root {
+    /* Cores de Fundo */
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-header: #ffffff;
+    --bg-secondary: #f1f5f9;
+    
+    /* Cores de Texto */
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    
+    /* Cores da Marca e Ações */
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    
+    /* Status e Feedback */
+    --success-color: #16a34a;
+    --success-light: #f0fdf4;
+    --warning-color: #d97706;
+    --warning-light: #fffbeb;
+    --danger-color: #dc2626;
+    --danger-light: #fef2f2;
+    
+    /* Bordas e Sombras */
+    --border-color: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Transições e Raios de Borda */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-card: #1e293b;
+    --bg-header: #1e293b;
+    --bg-secondary: #334155;
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    
+    --primary-color: #3b82f6;
+    --primary-hover: #60a5fa;
+    --primary-light: #1e3a8a;
+    
+    --success-color: #22c55e;
+    --success-light: #14532d;
+    --warning-color: #f59e0b;
+    --warning-light: #78350f;
+    --danger-color: #ef4444;
+    --danger-light: #7f1d1d;
+    
+    --border-color: #334155;
+    --border-hover: #475569;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   2. RESET E ESTILOS BASE
+   ========================================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Acessibilidade - Foco Visível */
+:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   3. HEADER PRINCIPAL E BARRA DE NAVEGAÇÃO
+   ========================================================================== */
+.main-header {
+    background-color: var(--bg-header);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-icon {
+    font-size: 1.8rem;
+}
+
+.brand-text h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-primary);
+}
+
+.brand-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Botões utilitários do header */
+.btn-icon {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-icon:hover {
+    background-color: var(--border-color);
+}
+
+.btn-outline-danger {
+    background: transparent;
+    border: 1px solid var(--danger-color);
+    color: var(--danger-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger-color);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   4. LAYOUT PRINCIPAL E HERO CARD
+   ========================================================================== */
+.main-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    flex: 1;
+}
+
+.hero-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2.5rem;
+}
+
+.hero-content h2 {
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.hero-content p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.step-num {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Painel do Progresso Global */
+.global-progress-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.global-progress-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.progress-circle-container {
+    margin: 0 auto 1rem auto;
+}
+
+.progress-text-display span {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.progress-text-display small {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.progress-bar-wrapper {
+    margin-bottom: 1.25rem;
+}
+
+.progress-bar-bg {
+    background-color: var(--border-color);
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    background-color: var(--primary-color);
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+}
+
+.stats-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.stat-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   5. GRADE DE MÓDULOS E CARDS INDIVIDUAIS
+   ========================================================================== */
+.modules-section {
+    margin-bottom: 3rem;
+}
+
+.section-title-group {
+    margin-bottom: 1.5rem;
+}
+
+.section-title-group h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.section-title-group p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 1.5rem;
+}
+
+.module-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.module-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-hover);
+}
+
+.module-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.module-number {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+}
+
+.module-status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+}
+
+.status-pendente {
+    background-color: var(--bg-secondary);
+    color: var(--text-muted);
+}
+
+.status-andamento {
+    background-color: var(--warning-light);
+    color: var(--warning-color);
+}
+
+.status-concluido {
+    background-color: var(--success-light);
+    color: var(--success-color);
+}
+
+.module-title {
+    font-size: 1.15rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.module-description {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.module-card-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.module-progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.btn-primary {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-primary.disabled {
+    background-color: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   6. SEÇÃO E CARD DO SIMULADO FINAL
+   ========================================================================== */
+.exam-card {
+    background-color: var(--bg-card);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.exam-card.unlocked {
+    border-style: solid;
+    border-color: var(--success-color);
+    background-color: var(--success-light);
+}
+
+.exam-badge {
+    position: absolute;
+    top: -12px;
+    left: 24px;
+    background-color: var(--bg-secondary);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 0.2rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.exam-card.unlocked .exam-badge {
+    background-color: var(--success-color);
+    color: #ffffff;
+    border-color: var(--success-color);
+}
+
+.exam-content h3 {
+    font-size: 1.3rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.exam-content p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    max-width: 750px;
+}
+
+.exam-action {
+    min-width: 220px;
+}
+
+/* ==========================================================================
+   7. RODAPÉ
+   ========================================================================== */
+.main-footer {
+    background-color: var(--bg-header);
+    border-top: 1px solid var(--border-color);
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: auto;
+}
+
+/* ==========================================================================
+   8. RESPONSIVIDADE E MEDIA QUERIES (390px, 768px, 1440px)
+   ========================================================================== */
+
+/* Tablets (até 768px) */
+@media (max-width: 768px) {
+    .hero-card {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+    
+    .exam-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .exam-action {
+        width: 100%;
+    }
+}
+
+/* Celulares (390px e menores) */
+@media (max-width: 390px) {
+    .header-container {
+        padding: 0.8rem 1rem;
+    }
+    
+    .brand-text h1 {
+        font-size: 1.05rem;
+    }
+    
+    .brand-sub {
+        display: none;
+    }
+    
+    .main-container {
+        padding: 0 1rem;
+        margin: 1.2rem auto;
+    }
+    
+    .hero-content h2 {
+        font-size: 1.4rem;
+    }
+    
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+}
