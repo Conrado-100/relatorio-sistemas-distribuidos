@@ -1,0 +1,260 @@
+/* ==========================================================================
+   ESTILOS DOS COMPONENTES DAS LIÇÕES E LEITURA
+   ========================================================================== */
+
+/* Layout do Módulo com Sidebar */
+.module-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.sticky-progress-container {
+    position: sticky;
+    top: 61px;
+    z-index: 90;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.progress-info-bar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.4rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+/* Sidebar e Índice */
+.sidebar-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    position: sticky;
+    top: 110px;
+}
+
+.sidebar-card h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.toc-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toc-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.88rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.toc-link:hover, .toc-link.active {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Artigo e Conteúdo */
+.module-content {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.content-section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 120px;
+}
+
+.content-section h2 {
+    font-size: 1.6rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--primary-light);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.content-section h3 {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin: 1.5rem 0 0.75rem 0;
+}
+
+.content-section p, .content-section li {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
+.content-section ul, .content-section ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Highlight Boxes */
+.highlight-box {
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+    margin: 1.5rem 0;
+    border-left: 4px solid var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.highlight-box.danger {
+    border-left-color: var(--danger-color);
+    background-color: var(--danger-light);
+}
+
+.highlight-box.info {
+    border-left-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.highlight-box h4 {
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+}
+
+/* Tabelas Customizadas */
+.table-responsive {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.92rem;
+}
+
+.custom-table th, .custom-table td {
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.custom-table th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* Diagramas SVG Inline */
+.diagram-container {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.diagram-container h4 {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+.svg-diagram {
+    max-width: 100%;
+    height: auto;
+}
+
+.svg-node {
+    fill: var(--bg-card);
+    stroke: var(--primary-color);
+    stroke-width: 2;
+}
+
+.svg-node.active {
+    fill: var(--primary-color);
+}
+
+.svg-node.active + .svg-text {
+    fill: #ffffff;
+}
+
+.svg-text {
+    fill: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-anchor: middle;
+}
+
+.svg-subtext {
+    fill: var(--text-muted);
+    font-size: 10px;
+    text-anchor: middle;
+}
+
+.svg-arrow {
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Pilares ACID e DFS */
+.acid-grid, .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+}
+
+.acid-card, .pillar-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.pillar-card {
+    position: relative;
+    padding-top: 2rem;
+}
+
+.pillar-num {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-weight: 800;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+    padding: 0.1rem 0.5rem;
+    border-radius: 50%;
+}
+
+/* Botão de Retorno */
+.btn-back {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+    .module-layout {
+        grid-template-columns: 1fr;
+    }
+    .module-sidebar {
+        display: none; /* Em telas menores, esconde a barra lateral para priorizar a leitura */
+    }
+    .module-content {
+        padding: 1.5rem;
+    }
+}
