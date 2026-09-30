@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Estudo — Sistemas Distribuídos</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+    <!-- Header com Navegação de Retorno -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <a href="index.html" class="btn-back" title="Voltar ao Dashboard">← Voltar ao Curso</a>
+                <div class="brand-text">
+                    <h1 id="module-page-title">Carregando Módulo...</h1>
+                    <span id="module-page-subtitle" class="brand-sub">...</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Alternar modo escuro">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de Progresso de Leitura do Módulo -->
+    <div class="sticky-progress-container">
+        <div class="progress-info-bar">
+            <span id="reading-status">Progresso de Leitura: 0%</span>
+            <span id="quiz-status-badge" class="status-badge">Quiz: Não Realizado</span>
+        </div>
+        <div class="progress-bar-bg" style="height: 4px; border-radius: 0;">
+            <div id="reading-progress-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- Conteúdo Principal da Lição -->
+    <main class="main-container module-reading-container">
+        <div class="module-layout">
+            <!-- Sumário Lateral / Navegação do Conteúdo -->
+            <aside class="module-sidebar">
+                <div class="sidebar-card">
+                    <h3>Sumário da Lição</h3>
+                    <nav id="module-toc" class="toc-nav">
+                        <!-- Links gerados dinamicamente via JS -->
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Artigo com o Conteúdo Didático -->
+            <article class="module-content">
+                <div id="sections-wrapper">
+                    <!-- Seções do Módulo injetadas dinamicamente -->
+                </div>
+
+                <!-- Seção do Quiz do Módulo -->
+                <section id="module-quiz-section" class="quiz-section-container">
+                    <div class="quiz-header">
+                        <h2>Quiz de Fixação do Módulo</h2>
+                        <p>Responda às questões objetivas para testar seu conhecimento. É necessário atingir pelo menos 70% de acerto para concluir este módulo.</p>
+                    </div>
+                    <div id="quiz-container">
+                        <!-- Quiz e questões injetados dinamicamente -->
+                        <button id="btn-start-quiz" class="btn-primary" style="max-width: 250px; margin-top: 1rem;">
+                            Iniciar Quiz do Módulo
+                        </button>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <p>Sistemas Distribuídos — Material Didático Interativo.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts em Ordem de Dependência -->
+    <script src="js/progress.js"></script>
+    <script src="js/data-course.js"></script>
+    <script src="js/data-questions.js"></script>
+    <script src="js/quiz-engine.js"></script>
+    <script src="js/modulo-app.js"></script>
+</body>
+</html>
