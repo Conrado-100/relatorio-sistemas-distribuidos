@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const examStatusLabel = document.getElementById('final-exam-status');
         if (stats.examUnlocked) {
-            examStatusLabel.textContent = "Liberado!";
+            examStatusLabel.textContent = progressState.finalExam.completed ? "Concluído" : "Liberado!";
             examStatusLabel.style.color = "var(--success-color)";
         } else {
             examStatusLabel.textContent = "Bloqueado";
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (stats.examUnlocked) {
             examCard.classList.remove('locked');
             examCard.classList.add('unlocked');
-            examBadge.textContent = "🔓 Liberado";
+            examBadge.textContent = progressState.finalExam.completed ? "✅ Concluído" : "🔓 Liberado";
             examBtn.classList.remove('disabled');
             examBtn.removeAttribute('aria-disabled');
         } else {

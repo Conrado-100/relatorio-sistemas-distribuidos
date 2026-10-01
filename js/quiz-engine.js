@@ -8,7 +8,7 @@
         return window.courseQuestions || { modules: {}, finalExam: {} };
     }
 
-    function buildQuestionMarkup(question, index) {
+    function buildQuestionMarkup(question, index, showDifficulty) {
         const optionsMarkup = question.options.map((option) => {
             return `
                 <label class="option-item">
@@ -21,20 +21,22 @@
 
         return `
             <div class="question-card">
-                <h3>Pergunta ${index}</h3>
-                <p>${question.question}</p>
+                <h3>Pergunta ${index}${showDifficulty ? ` — ${question.difficulty}` : ''}</h3>
+                <p>${question.question.replace(/\n/g, '<br>')}</p>
                 <div class="options-list">${optionsMarkup}</div>
             </div>
         `;
     }
 
-    function buildResultMarkup(score, results, questionList) {
+    function buildResultMarkup(score, results, questionList, isFinalExam) {
         const success = score >= 70;
+        const correctCount = results.filter((answer, index) => answer === questionList[index].answer).length;
         const summary = `
             <div class="quiz-summary ${success ? 'success' : 'warning'}">
                 <strong>${success ? 'Parabéns!' : 'Foco no conteúdo'}</strong>
-                <p>Você acertou ${results.filter(Boolean).length} de ${questionList.length} questões.</p>
+                <p>Você acertou ${correctCount} de ${questionList.length} questões.</p>
                 <p>Percentual: <strong>${score}%</strong></p>
+                ${isFinalExam ? `<p>Erros: <strong>${questionList.length - correctCount}</strong></p><p>Situação final: <strong>${success ? 'Aprovado' : 'Reprovado'}</strong></p>` : ''}
             </div>
         `;
 
@@ -182,15 +184,21 @@
         const exam = bank.finalExam || { objective: [], discursive: [] };
         const questions = exam.objective || [];
 
-        if (!questions.length) {
-            container.innerHTML = '<p class="empty-state">O simulado final ainda não está disponível.</p>';
+        const expectedKeys = ['A', 'B', 'C', 'D'];
+        if (questions.length !== 10 || questions.some((question) =>
+            !question.options ||
+            question.options.length !== 4 ||
+            question.options.some((option, index) => option.key !== expectedKeys[index]) ||
+            !expectedKeys.includes(question.answer)
+        )) {
+            container.innerHTML = '<p class="empty-state">A avaliação final não está disponível porque a configuração das questões está incompleta.</p>';
             return;
         }
 
         const form = document.createElement('form');
         form.className = 'quiz-form';
         form.innerHTML = `
-            <div class="quiz-list">${questions.map((question, index) => buildQuestionMarkup(question, index + 1)).join('')}</div>
+            <div class="quiz-list">${questions.map((question, index) => buildQuestionMarkup(question, index + 1, true)).join('')}</div>
             <button type="submit" class="btn-primary quiz-submit-btn">Finalizar Simulado</button>
         `;
 
@@ -208,8 +216,8 @@
                 }
             });
 
-            const percentage = Math.round((correctCount / questions.length) * 100);
-            const resultMarkup = buildResultMarkup(percentage, selectedAnswers, questions);
+            const percentage = Math.round((correctCount / 10) * 100);
+            const resultMarkup = buildResultMarkup(percentage, selectedAnswers, questions, true);
             const resultBox = document.createElement('div');
             resultBox.className = 'quiz-result-box';
             resultBox.innerHTML = resultMarkup;
@@ -222,6 +230,8 @@
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Simulado Finalizado';
             }
+
+            CourseProgress.recordFinalExamResult(percentage);
 
             const summaryBlock = form.parentElement.querySelector('.quiz-result-box');
             if (summaryBlock) summaryBlock.remove();

@@ -130,6 +130,15 @@ const CourseProgress = (function() {
         return state;
     }
 
+    function recordFinalExamResult(score) {
+        const state = getProgress();
+        const percentage = clamp(Math.round(Number(score) || 0), 0, 100);
+        state.finalExam.score = percentage;
+        state.finalExam.completed = percentage >= 70;
+        saveProgress(state);
+        return state;
+    }
+
     function getGlobalStats() {
         const state = getProgress();
         let totalPercentSum = 0;
@@ -175,6 +184,7 @@ const CourseProgress = (function() {
         getProgress,
         getCourseProgress,
         updateModuleProgress,
+        recordFinalExamResult,
         getGlobalStats,
         isExamUnlocked,
         resetAllProgress

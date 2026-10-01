@@ -410,85 +410,146 @@ const courseQuestions = {
     objective: [
       {
         id: 'final-q1',
-        question: 'Qual estrutura do SO mantém informações do processo, como PID, estado e contador de instruções?',
+        difficulty: 'Fácil',
+        theme: 'Sistemas de Arquivos de Rede vs. Sistemas de Arquivos Distribuídos',
+        question: 'Em relação ao armazenamento de arquivos em ambientes de rede, qual é a principal diferença entre um Sistema de Arquivos de Rede e um Sistema de Arquivos Distribuído, segundo o material da disciplina?',
         options: [
-          { key: 'A', text: 'PCB' },
-          { key: 'B', text: 'DHT' },
-          { key: 'C', text: 'IDL' },
-          { key: 'D', text: 'NFS' },
-          { key: 'E', text: 'Middleware' }
+          { key: 'A', text: 'No Sistema de Arquivos de Rede, os arquivos ficam espalhados em vários servidores e o usuário os acessa como se fossem locais; no Distribuído, o arquivo é mantido em um único servidor fixo.' },
+          { key: 'B', text: 'No Sistema de Arquivos de Rede, o usuário precisa conhecer o nome do servidor em que o arquivo está localizado; no Sistema de Arquivos Distribuído, os arquivos estão espalhados por vários servidores e são acessados pelo usuário como se fossem locais.' },
+          { key: 'C', text: 'O Sistema de Arquivos de Rede proíbe o uso do comando de montagem em ambiente Unix, enquanto o Distribuído exige obrigatoriamente um banco de dados centralizado de permissões.' },
+          { key: 'D', text: 'O Sistema de Arquivos Distribuído não suporta permissões de segurança ou controle de consistência, enquanto o de Rede gerencia requisições idempotentes automaticamente.' }
         ],
-        answer: 'A',
-        explanation: 'O PCB (Process Control Block) armazena informações essenciais de gerenciamento do processo.'
+        answer: 'B',
+        explanation: 'Fundamentação no PDF: Aula03_2.pdf (Slide 3) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seção 19). O material explicita que no sistema de arquivos de rede "cada arquivo está em um servidor e o usuário deve conhecer o nome do servidor", enquanto no sistema de arquivos distribuído há "vários arquivos espalhados em vários servidores e o usuário acessa esses arquivos como se fossem um arquivo local".'
       },
       {
         id: 'final-q2',
-        question: 'Qual alternativa descreve corretamente a relação entre middleware e transparência em sistemas distribuídos?',
+        difficulty: 'Fácil',
+        theme: 'Redes Peer-to-Peer (P2P) e DHT',
+        question: 'As redes Peer-to-Peer (P2P) organizam os nós da rede para permitir o compartilhamento e a localização de dados. O que caracteriza essencialmente uma rede P2P estruturada em comparação a uma rede P2P não estruturada?',
         options: [
-          { key: 'A', text: 'Middleware reduz a necessidade de rede e elimina a heterogeneidade.' },
-          { key: 'B', text: 'Middleware oferece abstrações de rede e serviços de comunicação para que a aplicação veja o sistema como único e coerente.' },
-          { key: 'C', text: 'Middleware substitui o banco de dados do servidor.' },
-          { key: 'D', text: 'Middleware é responsável por fila de job e escalonamento da CPU.' },
-          { key: 'E', text: 'Middleware apenas registra logs e não participa da comunicação.' }
+          { key: 'A', text: 'A obrigatoriedade de utilizar um servidor central para validar acessos e manter o registro de arquivos de todos os nós.' },
+          { key: 'B', text: 'A realização de buscas por inundação (flooding), enviando a requisição para todos os nós vizinhos de forma aleatória.' },
+          { key: 'C', text: 'O uso de um processo padronizado (como uma DHT) em que um hash/chave é calculado para cada recurso e nó, alocando o recurso ao nó que mais se aproxima de seu hash.' },
+          { key: 'D', text: 'A exigência de que cada nó atue estritamente como cliente ou exclusivamente como servidor durante toda a sessão.' }
         ],
-        answer: 'B',
-        explanation: 'O middleware cria uma camada lógica de abstração para ocultar detalhes de rede, heterogeneidade e comunicação entre aplicações.'
+        answer: 'C',
+        explanation: 'Fundamentação no PDF: Aula02_2.pdf (Slide 6) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seção 14). Na P2P estruturada, "os recursos são encontrados e acessados usando um processo padronizado... a maneira mais comum é o uso de uma DHT".'
       },
       {
         id: 'final-q3',
-        question: 'O que a propriedade durabilidade da ACID garante?',
+        difficulty: 'Média',
+        theme: 'Execução Remota, IDL e Stubs',
+        question: 'Na execução remota de métodos entre objetos localizados em máquinas distintas, a primeira fase envolve a interface local. De acordo com o material, qual é o papel da IDL (Interface Definition Language) e do stub nessa etapa?',
         options: [
-          { key: 'A', text: 'Que a transação é executada em paralelo com outras.' },
-          { key: 'B', text: 'Que os dados persistem após o commit mesmo em caso de falha.' },
-          { key: 'C', text: 'Que a transação nunca bloqueia outros processos.' },
-          { key: 'D', text: 'Que a transação apenas consulta dados sem escrever.' },
-          { key: 'E', text: 'Que os recursos ficam em memória compartilhada.' }
+          { key: 'A', text: 'A IDL gerencia o roteamento de rede no sistema operacional; o stub é o banco de dados ativo responsável por armazenar o histórico de requisições.' },
+          { key: 'B', text: 'A IDL exibe a interface dos métodos públicos do objeto remoto, permitindo criar na máquina cliente um objeto local espelho chamado stub, que converte chamadas em requisições gerais.' },
+          { key: 'C', text: 'A IDL intercepta e executa os cálculos na CPU remota; o stub substitui a placa de rede na entrega física das mensagens.' },
+          { key: 'D', text: 'A IDL realiza a troca de contexto entre processos do sistema operacional; o stub resolve condições de corrida através de variáveis compartilhadas.' }
         ],
         answer: 'B',
-        explanation: 'Durabilidade significa que uma transação confirmada persiste mesmo após falha do sistema.'
+        explanation: 'Fundamentação no PDF: Aula02_2.pdf (Slide 14) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seção 18). O material afirma que os objetos exibem seus métodos públicos usando IDL e que "a partir da interface o objeto A pode criar um objeto local que é um espelho do objeto remoto B conhecido como stub".'
       },
       {
         id: 'final-q4',
-        question: 'Qual conceito é fundamental nas redes P2P estruturadas para localizar recursos?',
+        difficulty: 'Média',
+        theme: 'Arquiteturas P2P: Superpeers e Redes Híbridas',
+        question: 'Em redes Peer-to-Peer (P2P), diferentes estratégias são utilizadas para organizar a rede e otimizar a localização de recursos. Com base no material didático, qual é a função dos superpeers (superpares) e como funcionam as redes híbridas?',
         options: [
-          { key: 'A', text: 'Região crítica' },
-          { key: 'B', text: 'DHT' },
-          { key: 'C', text: 'PCB' },
-          { key: 'D', text: 'Escalonador' },
-          { key: 'E', text: 'Memória virtual' }
+          { key: 'A', text: 'Os superpeers realizam trocas de contexto na CPU; as redes híbridas proíbem o uso da arquitetura cliente-servidor.' },
+          { key: 'B', text: 'Os superpeers mantêm índices para interligar nós e evitar que redes não estruturadas fiquem desconexas; as redes híbridas acumulam características, como no BitTorrent, que usa um servidor Web para obter o arquivo .torrent e depois usa a DHT para localizar o arquivo na rede.' },
+          { key: 'C', text: 'Os superpeers convertem chamadas assíncronas em síncronas; as redes híbridas funcionam exclusivamente por meio do protocolo de exclusão mútua.' },
+          { key: 'D', text: 'Os superpeers eliminam os roteadores da rede física; as redes híbridas dependem de um único nó mestre que centraliza a gravação de todos os arquivos do cluster.' }
         ],
         answer: 'B',
-        explanation: 'A DHT é a base da organização estruturada em P2P, permitindo mapear recursos e nós por chaves distribuídas.'
+        explanation: 'Fundamentação no PDF: Aula02_2.pdf (Slides 10 e 11) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seção 14). Superpeers "podem ser usados para manter índices que interligam outros nós e evitam que uma rede não estruturada se torne uma rede desconexa". As redes híbridas acumulam modelos, exemplificadas pelo BitTorrent.'
       },
       {
         id: 'final-q5',
-        question: 'Qual é a principal vantagem de montar um diretório remoto em um ponto da árvore local de arquivos?',
+        difficulty: 'Média',
+        theme: 'Concorrência: Condição de Corrida, Região Crítica e Mutex',
+        question: 'Em sistemas operacionais multitarefa e cooperativos, a gerência de acesso a recursos compartilhados é fundamental. O que caracteriza uma Condição de Corrida (Race Condition) e qual é a função do mutex (exclusão mútua)?',
         options: [
-          { key: 'A', text: 'Permitir que o usuário acesse o recurso remoto como se fosse local, sem precisar conhecer sua localização física.' },
-          { key: 'B', text: 'Reduzir a necessidade de autenticação no servidor.' },
-          { key: 'C', text: 'Substituir a necessidade de consistência do sistema.' },
-          { key: 'D', text: 'Remover a camada de rede do sistema distribuído.' },
-          { key: 'E', text: 'Evitar qualquer falha de um único nó.' }
+          { key: 'A', text: 'Condição de corrida é o tempo de overhead gerado no salvamento de registradores; o mutex é o algoritmo que seleciona qual processo usará a CPU.' },
+          { key: 'B', text: 'Condição de corrida é a situação em que dois ou mais processos leem e escrevem um dado compartilhado e o resultado final depende da ordem de execução; o mutex é a estratégia que impede que mais de um processo acesse a região crítica simultaneamente.' },
+          { key: 'C', text: 'Condição de corrida ocorre quando o buffer do modelo produtor-consumidor é limitado; o mutex força todos os processos a mudarem para o estado "Esperando".' },
+          { key: 'D', text: 'Condição de corrida é a falha gerada pela perda de pacotes na rede; o mutex cria cópias do processo na fila de jobs.' }
+        ],
+        answer: 'B',
+        explanation: 'Fundamentação no PDF: Aula01_2.pdf (Slides 20 e 22) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seções 8 e 9). Condição de corrida é a "condição em que dois processos leem e escrevem um dado compartilhado e o resultado final depende da ordem em que os processos são executados". Exclusão mútua (mutex) é a estratégia para "evitar que mais de um processo leia/escreva ao mesmo tempo" na região crítica.'
+      },
+      {
+        id: 'final-q6',
+        difficulty: 'Média',
+        theme: 'Comunicação entre Processos (IPC) e o Problema do Produtor-Consumidor',
+        question: 'Para cumprir seus objetivos, processos cooperativos precisam se comunicar. O material apresenta duas formas principais de Comunicação entre Processos (IPC) e o paradigma Produtor-Consumidor. Sobre esses conceitos, assinale a alternativa correta:',
+        options: [
+          { key: 'A', text: 'Na passagem de mensagens, os processos obrigatoriamente se comunicam utilizando variáveis compartilhadas no espaço de memória do usuário.' },
+          { key: 'B', text: 'Na memória compartilhada, a troca de informações é realizada exclusivamente por meio das funções send(destino, mensagem) e receive(origem, mensagem).' },
+          { key: 'C', text: 'No problema do Produtor-Consumidor, o processo produtor gera informações que são consumidas pelo consumidor, sendo analisadas as variações de buffer ilimitado (sem limite prático de tamanho) e buffer limitado (tamanho fixo).' },
+          { key: 'D', text: 'O uso de memória compartilhada elimina a possibilidade de condições de corrida, tornando dispensável o controle de acesso à região crítica.' }
+        ],
+        answer: 'C',
+        explanation: 'Fundamentação no PDF: Aula01_2.pdf (Slide 19) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seções 6 e 7). O problema trata do paradigma onde "processo produtor produz informações que são consumidas por um processo consumidor", distinguindo buffer ilimitado e limitado.'
+      },
+      {
+        id: 'final-q7',
+        difficulty: 'Média',
+        theme: 'Características dos Sistemas de Arquivos Distribuídos: Tolerância a Falhas e Consistência',
+        question: 'O projeto de Sistemas de Arquivos Distribuídos abrange características vitais como Tolerância a Falhas e Consistência. Segundo o material, quais mecanismos e regras tratam corretamente esses aspectos?',
+        options: [
+          { key: 'A', text: 'A tolerância a falhas pode utilizar requisições configuradas para ser idempotentes (em que várias requisições iguais geram um único efeito); na consistência, o acesso somente leitura pode ser compartilhado, mas o acesso de escrita deve ser exclusivo.' },
+          { key: 'B', text: 'A tolerância a falhas exige a remoção de todos os servidores secundários; a consistência determina que operações de escrita sejam compartilhadas simultaneamente entre todos os clientes.' },
+          { key: 'C', text: 'A tolerância a falhas é obtida configurando clientes magros na interface; a consistência proíbe o uso de cache distribuído em qualquer hipótese.' },
+          { key: 'D', text: 'A tolerância a falhas depende de transformar o sistema distribuído em um sistema de arquivos de rede; a consistência exige que os arquivos fiquem centralizados em um único nó local.' }
         ],
         answer: 'A',
-        explanation: 'A montagem local cria transparência para o usuário, que passa a acessar o recurso remoto como se estivesse no sistema de arquivos local.'
+        explanation: 'Fundamentação no PDF: Aula03_2.pdf (Slides 9 e 10) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seção 21). "Requisições podem ser configuradas para ser idempotentes (várias requisições iguais geram um único efeito)". Para consistência: "Acesso somente leitura pode ser compartilhado / Acesso de escrita deve ser exclusivo".'
+      },
+      {
+        id: 'final-q8',
+        difficulty: 'Difícil',
+        theme: 'Gerenciamento de Processos, Escalonamento e Troca de Contexto',
+        question: 'O Sistema Operacional gerencia a execução de múltiplos processos organizando-os em filas, alternando seus estados e alocando recursos. Analise as afirmativas abaixo sobre o ciclo de vida dos processos e os algoritmos de escalonamento:\nI. O escalonador a curto prazo (ou de CPU) é invocado com alta frequência (milissegundos) para selecionar qual processo da fila de pronto será executado a seguir.\nII. O escalonador a longo prazo (ou de job) é invocado com menor frequência e controla o grau de multiprogramação ao selecionar quais processos devem ser trazidos para a fila de pronto.\nIII. Durante a troca de contexto, a CPU realiza trabalho útil ao processar as instruções de E/S dos processos ativos, aproveitando o tempo de transição.\nIV. O PCB (Process Control Block) guarda informações do processo, incluindo estado do processo, contador de programa, registradores e limites de memória.\nEstão corretas as afirmativas:',
+        options: [
+          { key: 'A', text: 'I e III, apenas.' },
+          { key: 'B', text: 'I, II e IV, apenas.' },
+          { key: 'C', text: 'II, III e IV, apenas.' },
+          { key: 'D', text: 'I, II, III e IV.' }
+        ],
+        answer: 'B',
+        explanation: 'Fundamentação no PDF: Aula01_2.pdf (Slides 6, 8, 12 e 13) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seções 1, 2 e 4). As afirmativas I, II e IV são corretas. A afirmativa III é incorreta porque "o tempo de troca de contexto é overhead; o sistema não realiza trabalho útil enquanto faz a troca".'
+      },
+      {
+        id: 'final-q9',
+        difficulty: 'Difícil',
+        theme: 'Middleware, Interceptadores e Arquitetura da Execução Remota',
+        question: 'Em middlewares baseados em objetos remotos e Chamadas de Procedimento Remoto (RPC), a abstração da comunicação ocorre em camadas. Analise o fluxo de invocação remota entre um objeto $A$ (local) e um objeto $B$ (remoto) e assinale a alternativa que descreve corretamente esse processo:',
+        options: [
+          { key: 'A', text: 'O objeto $A$ acessa diretamente a placa de rede da máquina remota sem passar por middlewares ou tradução de formatos.' },
+          { key: 'B', text: 'O interceptador traduz o pedido da aplicação para o middleware; a execução remota divide-se em 3 fases: interface local (usando IDL e stub), tradução pelo middleware (resolvendo representação e serialização) e transformação em pedido de rede enviado pelo S.O..' },
+          { key: 'C', text: 'A tradução pelo middleware altera o estado do processo no cliente de "Executando" para "Novo", interrompendo a chamada se for síncrona.' },
+          { key: 'D', text: 'O stub é gerado na máquina remota $B$ para executar a exclusão mútua nos dados da máquina $A$ antes do envio pela rede.' }
+        ],
+        answer: 'B',
+        explanation: 'Fundamentação no PDF: Aula02_2.pdf (Slides 12 a 16) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seções 17 e 18). Descreve o papel do interceptador e as 3 fases exatas da execução remota especificadas no material.'
+      },
+      {
+        id: 'final-q10',
+        difficulty: 'Difícil',
+        theme: 'Arquiteturas de Sistemas Distribuídos, Transações ACID e Aplicações em 3 Camadas',
+        question: 'A organização de Sistemas Distribuídos exige a escolha de arquiteturas e garantias transacionais adequadas. Avalie as proposições a seguir:\nNa arquitetura de aplicações em três camadas (Interface, Processamento e Dados), a camada de Interface abrange os conceitos de clientes magros e clientes gordos.\nAs propriedades ACID de uma transação garantem que ela seja Atômica (indivisível), Consistente (não viola regras), Isolada (não afeta outras transações) e Durável (alterações efetuadas permanecem).\nNa arquitetura centralizada há separação clara entre clientes e servidores; na descentralizada não há separação clara, podendo cada equipamento atuar como cliente e/ou servidor.\nRedes P2P não estruturadas utilizam obrigatoriamente uma DHT para associar recursos a chaves e alocá-los no nó mais próximo.\nAssinale a alternativa correta:',
+        options: [
+          { key: 'A', text: 'Apenas as proposições 1 e 4 estão corretas.' },
+          { key: 'B', text: 'Apenas as proposições 1, 2 e 3 estão corretas.' },
+          { key: 'C', text: 'Apenas as proposições 2, 3 e 4 estão corretas.' },
+          { key: 'D', text: 'Todas as proposições (1, 2, 3 e 4) estão corretas.' }
+        ],
+        answer: 'B',
+        explanation: 'Fundamentação no PDF: Aula02_2.pdf (Slides 2, 4, 5, 6 e 9) e Revisao_Sistemas_Distribuidos (1)_2.pdf (Seções 13, 14, 15 e 16).Proposição 1: Correta (Aula02_2.pdf, S4). Proposição 2: Correta (Aula02_2.pdf, S2). Proposição 3: Correta (Aula02_2.pdf, S5). Proposição 4: Incorreta. Quem utiliza DHT e chaves é a P2P estruturada. A não estruturada possui ligações aleatórias e realiza buscas por inundação.'
       }
     ],
-    discursive: [
-      {
-        id: 'final-d1',
-        prompt: 'Explique a diferença entre processo e comunicação entre processos, destacando a necessidade de sincronização em regiões críticas e o papel do middleware em um sistema distribuído.',
-        criteria: [
-          'processo',
-          'comunicação entre processos',
-          'IPC',
-          'região crítica',
-          'mutex',
-          'middleware'
-        ],
-        expected: 'A resposta deve diferenciar processo como programa em execução e IPC como mecanismo de troca de informação entre processos. Ela deve mencionar que, quando dois processos acessam um recurso compartilhado, o trecho do código que modifica o recurso é a região crítica e precisa de sincronização. O mutex garante exclusão mútua para evitar race condition. O middleware, por sua vez, oferece abstração e comunicação distribuída, ocultando detalhes de rede e heterogeneidade para a aplicação.'
-      }
-    ]
+    discursive: []
   }
 };
 
