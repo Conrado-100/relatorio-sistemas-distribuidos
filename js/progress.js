@@ -6,7 +6,7 @@ const CourseProgress = (function() {
     'use strict';
 
     const STORAGE_KEY = 'sd_course_progress_v1';
-    const TOTAL_MODULES = 4;
+    const TOTAL_MODULES = 5;
 
     function createDefaultModule() {
         return { readPercent: 0, quizScore: 0, completed: false };
@@ -21,7 +21,8 @@ const CourseProgress = (function() {
             '1': createDefaultModule(),
             '2': createDefaultModule(),
             '3': createDefaultModule(),
-            '4': createDefaultModule()
+            '4': createDefaultModule(),
+            '5': createDefaultModule()
         },
         finalExam: {
             unlocked: false,

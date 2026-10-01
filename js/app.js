@@ -29,6 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
             title: "Módulo 4: Sistemas de Arquivos Distribuídos (DFS)",
             description: "Arquivos de rede vs distribuídos, montagem em Unix, e os 5 pilares: transparência, escalabilidade, segurança, tolerância a falhas (idempotência) e consistência.",
             estimatedTime: "2h 45min"
+        },
+        {
+            id: 5,
+            title: "Módulo 5: Tolerância a Falhas, Replicação e Consenso Distribuído",
+            description: "Este módulo apresenta os mecanismos fundamentais para manter um sistema distribuído em funcionamento mesmo diante de falhas em parte de seus componentes. A discussão aborda confiabilidade, disponibilidade, modelos de falha, replicação, consenso, quórum, falhas bizantinas e a forma como a comunicação em grupo e a ordenação total de mensagens ajudam a sustentar a consistência.",
+            estimatedTime: ""
         }
     ];
 

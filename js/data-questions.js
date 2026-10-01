@@ -232,6 +232,178 @@ const courseQuestions = {
           expected: 'A resposta deve mencionar transparência de nomeação e localização, escalabilidade para expansão do sistema, segurança distribuída para autenticação e controle de acesso, tolerância a falhas para manter o serviço mesmo com falhas de nós ou rede, e consistência para coordenar acesso concorrente. A idempotência também deve aparecer como característica relevante para repetir requisições sem corrupta os dados. Esses pilares tornam o DFS confiável e acessível como se o arquivo estivesse em um disco local.'
         }
       ]
+    },
+    5: {
+      objective: [
+        {
+          id: 'm5-q1',
+          question: 'Qual definição melhor expressa o conceito de tolerância a falhas em um sistema distribuído?',
+          options: [
+            { key: 'A', text: 'Capacidade de aumentar o número de mensagens trocadas entre processos sem afetar a execução.' },
+            { key: 'B', text: 'Capacidade de manter o funcionamento correto mesmo após falhas em parte de seus componentes físicos ou de software.' },
+            { key: 'C', text: 'Capacidade de substituir um relógio global por um relógio local em todos os nós.' },
+            { key: 'D', text: 'Capacidade de impedir que duas réplicas executem a mesma operação ao mesmo tempo.' },
+            { key: 'E', text: 'Capacidade de ocultar todas as falhas de rede pela transmissão de mensagens sem confirmação.' }
+          ],
+          answer: 'B',
+          explanation: 'A tolerância a falhas é a capacidade do sistema manter seu funcionamento correto mesmo quando parte de seus componentes falha.',
+          concept: 'Fault Tolerance'
+        },
+        {
+          id: 'm5-q2',
+          question: 'Qual modelo de falha é caracterizado por um nó que para de responder definitivamente e deixa de participar do sistema?',
+          options: [
+            { key: 'A', text: 'Crash-Recovery' },
+            { key: 'B', text: 'Crash-Stop' },
+            { key: 'C', text: 'Byzantine Fault' },
+            { key: 'D', text: 'Virtual Synchrony' },
+            { key: 'E', text: 'Total Order Multicast' }
+          ],
+          answer: 'B',
+          explanation: 'No Crash-Stop, o nó deixa de responder e passa a não participar mais do sistema de forma definitiva.',
+          concept: 'Crash-Stop'
+        },
+        {
+          id: 'm5-q3',
+          question: 'Qual alternativa descreve corretamente a falha bizantina?',
+          options: [
+            { key: 'A', text: 'O nó falha e reinicia automaticamente sem perder o estado.' },
+            { key: 'B', text: 'O nó deixa de responder e não pode mais recuperar.' },
+            { key: 'C', text: 'O nó pode agir de maneira arbitrária, enviar informações falsas ou contraditórias e comprometer o consenso.' },
+            { key: 'D', text: 'O nó apenas atrasa mensagens sem enviar conteúdo incorreto.' },
+            { key: 'E', text: 'O nó bloqueia o sistema somente quando o quorum não é alcançado.' }
+          ],
+          answer: 'C',
+          explanation: 'A falha bizantina é a mais grave, porque o nó pode se comportar de modo arbitrário, malicioso ou inconsistente.',
+          concept: 'Byzantine Fault'
+        },
+        {
+          id: 'm5-q4',
+          question: 'Qual afirmação melhor diferencia Availability de Reliability?',
+          options: [
+            { key: 'A', text: 'Availability mede a probabilidade de o sistema funcionar sem falhas contínuas; Reliability mede o tempo em que o sistema está disponível.' },
+            { key: 'B', text: 'Availability mede o percentual de tempo em que o sistema está disponível; Reliability mede a probabilidade de o sistema funcionar sem falha contínua durante um intervalo.' },
+            { key: 'C', text: 'Availability e Reliability são sinônimos usados em sistemas distribuídos.' },
+            { key: 'D', text: 'Availability considera apenas falhas de rede; Reliability considera apenas falhas locais.' },
+            { key: 'E', text: 'Availability depende exclusivamente de quorum; Reliability depende apenas de Paxos.' }
+          ],
+          answer: 'B',
+          explanation: 'Availability mede disponibilidade operacional, enquanto Reliability mede probabilidade de operação sem falha contínua ao longo de tempo.',
+          concept: 'Reliability vs Availability'
+        },
+        {
+          id: 'm5-q5',
+          question: 'No modelo de replicação passiva (Primary-Backup), qual característica é correta?',
+          options: [
+            { key: 'A', text: 'Todos os nós executam a requisição e propagam o resultado ao cliente.' },
+            { key: 'B', text: 'Apenas o Primary executa a requisição e os Backups mantêm cópias atualizadas do estado.' },
+            { key: 'C', text: 'Os backups são responsáveis por ordenar mensagens para o Primary.' },
+            { key: 'D', text: 'O cliente somente envia a requisição para os backups e não para o primary.' },
+            { key: 'E', text: 'O State Machine é descartado a cada failover.' }
+          ],
+          answer: 'B',
+          explanation: 'Na replicação passiva, o Primary executa a requisição e os Backups mantêm cópias do estado atualizadas por propagação das alterações.',
+          concept: 'Primary-Backup Replication'
+        },
+        {
+          id: 'm5-q6',
+          question: 'Qual é a principal diferença entre replicação passiva e replicação ativa?',
+          options: [
+            { key: 'A', text: 'Na passiva, todos os nós executam a operação; na ativa, apenas o Primary executa.' },
+            { key: 'B', text: 'Na ativa, todas as réplicas recebem a requisição e executam a operação; na passiva, apenas o Primary executa a requisição.' },
+            { key: 'C', text: 'Na ativa, os backups não mantêm o estado; na passiva, todos precisam manter o mesmo log.' },
+            { key: 'D', text: 'Na passiva, é obrigatório usar Paxos; na ativa, não é necessário.' },
+            { key: 'E', text: 'Nenhuma diferença prática: ambos usam a mesma abordagem.' }
+          ],
+          answer: 'B',
+          explanation: 'A diferença essencial é que na replicação ativa todas as réplicas executam a operação, enquanto na passiva apenas o Primary executa e propagação pelo estado é feita para backups.',
+          concept: 'Active vs Passive Replication'
+        },
+        {
+          id: 'm5-q7',
+          question: 'Qual é o objetivo principal do consenso distribuído?',
+          options: [
+            { key: 'A', text: 'Permitir que um cliente gere o menor número possível de mensagens.' },
+            { key: 'B', text: 'Garantir que vários processos concordem sobre um valor ou sequência de ações mesmo diante de falhas.' },
+            { key: 'C', text: 'Reduzir o uso de memória para as réplicas em sistemas ativos.' },
+            { key: 'D', text: 'Eliminar a necessidade de ordem de mensagens em logs locais.' },
+            { key: 'E', text: 'Forçar todos os processos a executar o mesmo código sem comunicação.' }
+          ],
+          answer: 'B',
+          explanation: 'O consenso distribui a decisão entre processos e garante que eles converjam para um valor ou sequência de ações mesmo com falhas.',
+          concept: 'Consensus'
+        },
+        {
+          id: 'm5-q8',
+          question: 'Para tolerar f falhas do tipo Crash-Stop, qual fórmula de quórum é correta?',
+          options: [
+            { key: 'A', text: 'N = f + 1' },
+            { key: 'B', text: 'N = 2f + 1' },
+            { key: 'C', text: 'N = 3f + 1' },
+            { key: 'D', text: 'N = 2f' },
+            { key: 'E', text: 'N = f + 2' }
+          ],
+          answer: 'B',
+          explanation: 'Para Crash-Stop, a regra é N = 2f + 1, sendo necessário um número mínimo de nós para tolerar f falhas.',
+          concept: 'Quorum para Crash-Stop'
+        },
+        {
+          id: 'm5-q9',
+          question: 'Para tolerar f falhas bizantinas, quantos nós são necessários no mínimo?',
+          options: [
+            { key: 'A', text: '2f + 1' },
+            { key: 'B', text: '3f' },
+            { key: 'C', text: '3f + 1' },
+            { key: 'D', text: 'f + 3' },
+            { key: 'E', text: 'f + 1' }
+          ],
+          answer: 'C',
+          explanation: 'A regra para falhas bizantinas é N = 3f + 1, pois o sistema precisa lidar com participantes que podem agir de forma arbitrária.',
+          concept: 'Quorum para falhas bizantinas'
+        },
+        {
+          id: 'm5-q10',
+          question: 'Por que o problema dos Generais Bizantinos é mais difícil de resolver do que falhas do tipo Crash-Stop?',
+          options: [
+            { key: 'A', text: 'Porque o problema elimina a necessidade de comunicação entre grupos.' },
+            { key: 'B', text: 'Porque o processo defeituoso não apenas para, mas pode mentir, enviar informações contraditórias e agir de forma arbitrária.' },
+            { key: 'C', text: 'Porque o problema exige que todos os processos usem a mesma frequência de CPU.' },
+            { key: 'D', text: 'Porque o problema permite que mensagens sejam esquecidas sem prejudicar a decisão.' },
+            { key: 'E', text: 'Porque ele considera apenas a latência da rede e não a lógica do consenso.' }
+          ],
+          answer: 'B',
+          explanation: 'Falhas bizantinas são mais desafiadoras porque o processo defeituoso pode agir de maneira maliciosa e inconsistente, não apenas deixar de responder.',
+          concept: 'Problema dos Generais Bizantinos'
+        },
+        {
+          id: 'm5-q11',
+          question: 'Qual é o papel principal da Sincronia Virtual (Virtual Synchrony) em uma comunicação em grupo?',
+          options: [
+            { key: 'A', text: 'Garantir que um novo nó sempre execute em modo stand-alone sem depende de outros.' },
+            { key: 'B', text: 'Manter uma visão consistente sobre mudanças de membros e entrega de mensagens em um grupo.' },
+            { key: 'C', text: 'Substituir a eleição de líder em protocolos de consenso.' },
+            { key: 'D', text: 'Proibir qualquer tipo de falha em membros do grupo.' },
+            { key: 'E', text: 'Remover a necessidade de quorum em qualquer decisão.' }
+          ],
+          answer: 'B',
+          explanation: 'A Virtual Synchrony mantém visão consistente de membros e coordena a entrega de mensagens para que o grupo continue coerente mesmo diante de falhas.',
+          concept: 'Virtual Synchrony / Group Communication'
+        },
+        {
+          id: 'm5-q12',
+          question: 'Qual característica é mais diretamente associada a Group Communication e Total Order Multicast?',
+          options: [
+            { key: 'A', text: 'A comunicação é feita em ordem aleatória para reduzir overhead.' },
+            { key: 'B', text: 'Todas as mensagens devem ser entregues na mesma ordem para todos os membros do grupo.' },
+            { key: 'C', text: 'O grupo ignora quorum e aceita qualquer decisão local.' },
+            { key: 'D', text: 'A comunicação em grupo exige apenas uma réplica passiva para funcionar.' },
+            { key: 'E', text: 'Total Order Multicast elimina qualquer necessidade de consenso.' }
+          ],
+          answer: 'B',
+          explanation: 'Em Group Communication, a ordenação total das mensagens é importante para que todos os participantes processem a mesma sequência de eventos.',
+          concept: 'Group Communication / Total Order Multicast'
+        }
+      ]
     }
   },
   finalExam: {

@@ -366,6 +366,147 @@ const courseData = {
                     `
                 }
             ]
+        },
+        {
+            id: 5,
+            title: "Módulo 5: Tolerância a Falhas, Replicação e Consenso Distribuído",
+            subtitle: "Tolerância a Falhas, Replicação e Consenso Distribuído",
+            sections: [
+                {
+                    id: "sec-5-1",
+                    title: "1. Tolerância a falhas",
+                    content: `
+                        <p>Este módulo apresenta os mecanismos fundamentais para manter um sistema distribuído em funcionamento mesmo diante de falhas em parte de seus componentes. A discussão aborda confiabilidade, disponibilidade, modelos de falha, replicação, consenso, quórum, falhas bizantinas e a forma como a comunicação em grupo e a ordenação total de mensagens ajudam a sustentar a consistência.</p>
+                        <p>A <strong>Fault Tolerance</strong> ou tolerância a falhas é a capacidade de um sistema distribuído manter seu funcionamento correto mesmo após a ocorrência de falhas em parte de seus componentes físicos ou de software.</p>
+                        <p>Em sistemas críticos, como sistemas de controle aéreo, a tolerância a falhas é essencial porque falhas em alguns nós não podem impedir a continuidade do serviço. Em muitas arquiteturas, réplicas e mecanismos de consenso mantêm a operação mesmo quando parte dos componentes falha.</p>
+                        <ul>
+                            <li><strong>Crash-Stop:</strong> O nó para de responder definitivamente e deixa de participar do sistema. Modelo simples de falha: o processo deixa de funcionar de forma permanente.</li>
+                            <li><strong>Crash-Recovery:</strong> O nó falha, mas pode reiniciar e tentar retomar a operação. A recuperação exige reinicialização de estado e reconciliação com o restante do sistema.</li>
+                            <li><strong>Byzantine Fault:</strong> O nó pode agir de maneira arbitrária, inconsistente ou maliciosa. Pode enviar informações falsas, contraditórias ou divergentes.</li>
+                        </ul>
+                        <h3>Exemplo</h3>
+                        <p>Em um sistema de controle aéreo, um servidor pode falhar, mas outros servidores espelhados continuam processando os dados e mantendo a operação. Isso exemplifica como a redundância e a replicação permitem continuação do serviço mesmo em presença de falhas parciais.</p>
+                    `
+                },
+                {
+                    id: "sec-5-2",
+                    title: "2. Reliability x Availability",
+                    content: `
+                        <p>Confiabilidade e disponibilidade medem aspectos diferentes do comportamento do sistema.</p>
+                        <h3>Availability</h3>
+                        <p>É a porcentagem de tempo em que o sistema está disponível e operando corretamente. Foca na continuidade de serviço. Exemplo: 99,9% de disponibilidade.</p>
+                        <h3>Reliability</h3>
+                        <p>É a probabilidade de o sistema funcionar sem falha contínua durante determinado intervalo de tempo. Foca na confiança de operação estável. Exemplo: probabilidade de funcionamento sem falha por 1.000 horas.</p>
+                        <p>Um sistema pode ser muito disponível em um dado momento, mas ainda assim ter baixa confiabilidade em operações longas. Já um sistema pode ser altamente confiável, mas estar indisponível por longos períodos por causa de manutenção ou falha de infraestrutura. Ambos conceitos são importantes, mas medem dimensões diferentes do serviço.</p>
+                    `
+                },
+                {
+                    id: "sec-5-3",
+                    title: "3. Replicação passiva",
+                    content: `
+                        <p>Modelo Primary-Backup: um nó coordena e os demais mantêm cópias.</p>
+                        <p>A <strong>Primary-Backup Replication</strong> é o modelo de replicação passiva em que apenas o <strong>Primary</strong> executa as requisições do cliente. O Primary propaga as alterações de estado para os <strong>Backups</strong>, que mantêm cópias atualizadas.</p>
+                        <p>Cliente → Primary → Backups</p>
+                        <h3>Características</h3>
+                        <ul>
+                            <li>Apenas o Primary executa as requisições.</li>
+                            <li>O Primary propaga as alterações de estado.</li>
+                            <li>Os Backups mantêm cópias atualizadas.</li>
+                            <li>Há menor consumo de processamento nos backups.</li>
+                            <li>Se o Primary falhar, o sistema precisa detectar a falha e promover outro nó.</li>
+                            <li>Existe tempo de failover e recuperação.</li>
+                        </ul>
+                        <h3>Exemplo de banco de dados distribuído</h3>
+                        <p>Em um banco de dados distribuído, um servidor primário recebe as transações e atualiza o estado. Os backups recebem as alterações e preservam o mesmo estado. Se o Primary falhar, é necessário detectar o problema e eleger um novo nó como coordenador para continuar o serviço.</p>
+                    `
+                },
+                {
+                    id: "sec-5-4",
+                    title: "4. Replicação ativa",
+                    content: `
+                        <p>Todas as réplicas executam a mesma requisição na mesma ordem.</p>
+                        <p>Na <strong>Active Replication</strong>, todas as réplicas recebem a requisição e executam a operação. Para manter consistência, é necessário garantir que a execução ocorra na mesma ordem em todas as réplicas.</p>
+                        <p>Isso normalmente exige ordenação total de mensagens e sincronização da sequência de execução. O custo computacional é maior, mas, em caso de falha de uma réplica, as demais já terão o estado atualizado.</p>
+                        <p>Cliente → Réplica 1 → Réplica 2 → Réplica 3</p>
+                        <p><strong>Diferença essencial</strong><br>Na replicação passiva, apenas o Primary execute; na ativa, todas executam a mesma operação e o estado precisa permanecer consistente em todas as cópias.</p>
+                    `
+                },
+                {
+                    id: "sec-5-5",
+                    title: "5. Consenso distribuído",
+                    content: `
+                        <p>Permitir que vários processos acordem sobre um valor ou sequência de ações/log.</p>
+                        <p>O objetivo do <strong>Consensus</strong> é fazer com que vários processos concordem sobre um valor ou sobre a sequência de ações a serem executadas, mesmo diante de falhas. Esse problema é central em sistemas distribuídos e aparece em protocolos como <strong>Paxos</strong> e <strong>Raft</strong>.</p>
+                        <p>Em geral, o consenso envolve eleição de líder, replicação de log e uso de maioria/quórum para garantir que uma decisão seja aceita e preservada.</p>
+                        <h3>Paxos</h3>
+                        <p>Algoritmo clássico para alcançar consenso em sistemas distribuídos. Foco em acordo com falhas e ausência de líder estável.</p>
+                        <h3>Raft</h3>
+                        <p>Algoritmo de consenso mais didático e de implementação mais direta. Também usa eleição de líder e replicação de log.</p>
+                    `
+                },
+                {
+                    id: "sec-5-6",
+                    title: "6. Quórum e tolerância a falhas",
+                    content: `
+                        <p>Unidades de decisão que exigem maioria para preservar consistência.</p>
+                        <p>Uma <strong>maioria</strong> ou um <strong>quórum</strong> é a quantidade mínima de nós necessária para tomar ou validar uma decisão sem perder a consistência do sistema. A lógica depende do tipo de falha a ser tolerada.</p>
+                        <h3>Falhas Crash-Stop</h3>
+                        <p>Para tolerar <strong>f</strong> falhas do tipo <strong>Crash-Stop</strong>, a fórmula é:</p>
+                        <p>N = 2f + 1</p>
+                        <p>Exemplo: se <strong>f = 2</strong>, então <strong>N = 2(2) + 1 = 5</strong>. Portanto, 5 nós são suficientes para tolerar 2 falhas Crash-Stop.</p>
+                        <h3>Falhas bizantinas</h3>
+                        <p>Para tolerar <strong>f</strong> falhas bizantinas, a fórmula é:</p>
+                        <p>N = 3f + 1</p>
+                        <p>Isso significa que, para tolerar <strong>f</strong> nós defeituosos ou maliciosos, são necessários pelo menos <strong>3f + 1</strong> nós no sistema.</p>
+                        <p>Exemplo: para tolerar 1 falha bizantina, o sistema precisa de <strong>4</strong> nós; para tolerar 2 falhas, precisa de <strong>7</strong> nós.</p>
+                    `
+                },
+                {
+                    id: "sec-5-7",
+                    title: "7. Problema dos Generais Bizantinos",
+                    content: `
+                        <p>Consenso diante de participantes defeituosos ou maliciosos.</p>
+                        <p>O <strong>problema dos Generais Bizantinos</strong> envolve a necessidade de consenso quando alguns participantes podem ser defeituosos ou maliciosos e enviar informações diferentes para diferentes membros do sistema.</p>
+                        <p>Falhas bizantinas são mais difíceis do que falhas do tipo <strong>Crash-Stop</strong>, porque o processo defeituoso não apenas deixa de responder; ele pode mentir, enviar dados inconsistentes e agir de maneira contraditória para diferentes participantes.</p>
+                    `
+                },
+                {
+                    id: "sec-5-8",
+                    title: "8. Sincronia virtual",
+                    content: `
+                        <p>Abstração de comunicação em grupo com visão consistente de membros e mensagens.</p>
+                        <p>A <strong>Sincronia Virtual</strong>, também chamada de <strong>Virtual Synchrony</strong>, é uma abstração de comunicação em grupo que mantém mudanças de membros (<strong>views</strong>) e entrega de mensagens coordenadas entre os participantes.</p>
+                        <p>Ela é importante em sistemas distribuídos em que um nó pode falhar enquanto uma mensagem está sendo entregue. Nesse caso, o grupo deve manter uma visão consistente da entrega de mensagens e da mudança de membros. A ideia central está em <strong>Group Communication</strong> e em manter o conjunto de participantes em uma mesma visão de grupo.</p>
+                        <h3>Conceitos-chave</h3>
+                        <ul>
+                            <li><strong>Virtual Synchrony:</strong> conjunto consistente de condições de entrega e visão de membros.</li>
+                            <li><strong>Group Communication:</strong> comunicação coordenada entre participantes de um grupo.</li>
+                            <li><strong>Total Order Multicast:</strong> entrega de mensagens em ordem total para todos os membros do grupo.</li>
+                        </ul>
+                    `
+                },
+                {
+                    id: "sec-5-9",
+                    title: "Resumo de revisão",
+                    content: `
+                        <ul>
+                            <li>Fault Tolerance = manter operação apesar de falhas</li>
+                            <li>Crash-Stop = para de responder</li>
+                            <li>Crash-Recovery = reinicia</li>
+                            <li>Byzantine Fault = comportamento arbitrário</li>
+                            <li>Reliability = probabilidade de não falhar</li>
+                            <li>Availability = tempo disponível</li>
+                            <li>Primary-Backup = apenas o primary executa</li>
+                            <li>Active Replication = todas executam</li>
+                            <li>Consensus = acordo entre processos</li>
+                            <li>Paxos / Raft = protocolos de consenso</li>
+                            <li>N = 2f + 1 = Crash-Stop</li>
+                            <li>N = 3f + 1 = Bizantina</li>
+                            <li>Virtual Synchrony = grupo consistente</li>
+                        </ul>
+                    `
+                }
+            ]
         }
     ]
 };
