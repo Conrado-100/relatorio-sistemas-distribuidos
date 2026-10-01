@@ -369,3 +369,5 @@ const courseData = {
         }
     ]
 };
+
+window.courseData = courseData;

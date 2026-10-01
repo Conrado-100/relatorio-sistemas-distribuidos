@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulado Final — Sistemas Distribuídos</title>
+    <meta name="description" content="Simulado final dos módulos de Sistemas Distribuídos.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <a href="index.html" class="btn-back" title="Voltar ao Dashboard">← Voltar ao Curso</a>
+                <div class="brand-text">
+                    <h1>Simulado Final</h1>
+                    <span class="brand-sub">Avaliação abrangente de Sistemas Distribuídos</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Alternar modo escuro">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container exam-page-container">
+        <section id="exam-blocked" class="exam-guard-card hidden" aria-live="polite">
+            <h2>Simulado final bloqueado</h2>
+            <p>Você precisa concluir todos os módulos do curso com leitura em 100% e quiz com nota mínima de 70% em cada um deles antes de acessar a avaliação final.</p>
+            <p>Quando os quatro módulos estiverem concluídos, o botão de acesso será liberado automaticamente.</p>
+            <a href="index.html" class="btn-primary">Voltar ao Dashboard</a>
+        </section>
+
+        <section id="exam-authorized" class="hidden">
+            <div class="exam-shell">
+                <div class="exam-head">
+                    <span class="exam-badge exam-badge-final">Final</span>
+                    <h2>Questões Finais</h2>
+                    <p>Este simulado avalia os conceitos fundamentais de processos, IPC, middleware, transações ACID, P2P, DHT e sistemas de arquivos distribuídos.</p>
+                </div>
+
+                <div id="final-exam-questions" aria-live="polite"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <p>Sistemas Distribuídos — Simulado Final</p>
+        </div>
+    </footer>
+
+    <script src="js/progress.js"></script>
+    <script src="js/data-questions.js"></script>
+    <script src="js/discursive-engine.js"></script>
+    <script src="js/quiz-engine.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('sd_theme_pref') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            const themeButton = document.querySelector('#theme-toggle .theme-icon');
+            if (themeButton) {
+                themeButton.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+
+            document.getElementById('theme-toggle').addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('sd_theme_pref', newTheme);
+                if (themeButton) {
+                    themeButton.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                }
+            });
+
+            const blockedSection = document.getElementById('exam-blocked');
+            const authorizedSection = document.getElementById('exam-authorized');
+
+            if (CourseProgress.isExamUnlocked()) {
+                blockedSection.classList.add('hidden');
+                authorizedSection.classList.remove('hidden');
+                if (typeof window.renderFinalExamQuiz === 'function') {
+                    window.renderFinalExamQuiz();
+                }
+            } else {
+                authorizedSection.classList.add('hidden');
+                blockedSection.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

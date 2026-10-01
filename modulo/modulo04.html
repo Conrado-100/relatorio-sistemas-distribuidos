@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo 4 — Sincronização, Relógios Lógicos e Transações Distribuídas</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success-color: #16a34a;
+      --success-light: #f0fdf4;
+      --warning-color: #d97706;
+      --warning-light: #fffbeb;
+      --danger-color: #dc2626;
+      --danger-light: #fef2f2;
+      --border-color: #e2e8f0;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-card: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary-color: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-light: rgba(96, 165, 250, 0.12);
+      --success-color: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.12);
+      --warning-color: #fbbf24;
+      --warning-light: rgba(251, 191, 36, 0.08);
+      --danger-color: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.12);
+      --border-color: #334155;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    a { color: inherit; }
+
+    .module-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+    }
+
+    .main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      background: var(--primary-light);
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+    }
+
+    .brand-info { min-width: 0; }
+    .brand-info h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+    .brand-info p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 14px 0 12px;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 820px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+    }
+
+    .objective-list,
+    .simple-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-secondary);
+    }
+
+    .objective-list li,
+    .simple-list li {
+      margin-bottom: 8px;
+    }
+
+    .mini-stat {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini-stat .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 {
+      margin: 0 0 6px;
+      font-size: clamp(1.6rem, 2vw, 2rem);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .highlight {
+      border-left: 4px solid var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .warning {
+      border-left: 4px solid var(--warning-color);
+      background: var(--warning-light);
+    }
+
+    .success-box {
+      border-left: 4px solid var(--success-color);
+      background: var(--success-light);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .compare-card h4 { margin: 0 0 10px; }
+
+    .mini-box {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      border: 1px dashed var(--border-color);
+      margin-top: 10px;
+      color: var(--text-secondary);
+    }
+
+    .ring {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--text-primary);
+    }
+
+    .ring-node {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      min-width: 74px;
+      text-align: center;
+    }
+
+    .ring-arrow {
+      color: var(--primary-color);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--warning-light);
+      border: 1px solid rgba(217, 119, 6, 0.4);
+    }
+
+    .callout strong {
+      color: var(--warning-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .quiz-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .question-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .question-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      color: var(--text-primary);
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .option-label input {
+      margin-top: 4px;
+      accent-color: var(--primary-color);
+    }
+
+    .option-letter {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .answer-result {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .answer-result.visible {
+      display: block;
+    }
+
+    .answer-result.correct {
+      background: var(--success-light);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: var(--text-primary);
+    }
+
+    .answer-result.incorrect {
+      background: var(--danger-light);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: var(--text-primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      color: white;
+      background: var(--primary-color);
+    }
+
+    .button.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .button:hover { transform: translateY(-1px); }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .score-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .score-panel.visible { display: block; }
+
+    .score-panel h3 { margin: 0 0 10px; }
+
+    .review-errors {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .review-errors.visible { display: block; }
+
+    .review-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      margin-top: 14px;
+    }
+
+    .review-item p {
+      margin: 8px 0;
+      color: var(--text-secondary);
+    }
+
+    .keyword {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-two { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 540px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .mini-stat { grid-template-columns: 1fr 1fr; }
+
+      .quiz-box,
+      .card,
+      .hero {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="back-link" href="../index.html">← Voltar ao curso</a>
+        <div class="brand-info">
+          <h1>Módulo 4</h1>
+          <p>Sincronização, Relógios Lógicos e Transações Distribuídas</p>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo escuro">🌙</button>
+    </div>
+  </header>
+
+  <main class="module-wrap" data-module="4">
+    <section class="hero">
+      <span class="eyebrow">Sistemas Distribuídos</span>
+      <h2>Sincronização, Relógios Lógicos e Transações Distribuídas</h2>
+      <p>
+        Este módulo trata de um problema central em sistemas distribuídos: a ausência de um relógio físico global.
+        A partir dessa premissa, o estudo aborda sincronização de relógios, causalidade, eventos concorrentes,
+        algoritmos de eleição, exclusão mútua distribuída e a atomicidade de transações em ambientes distribuídos.
+      </p>
+    </section>
+
+    <div class="grid-two">
+      <section class="card">
+        <h3>Objetivos de aprendizagem</h3>
+        <ul class="objective-list">
+          <li>Entender por que não existe um relógio físico global em sistemas distribuídos.</li>
+          <li>Reconhecer a ideia de relação Happens-Before e causalidade.</li>
+          <li>Aplicar a lógica de Lamport para ordenar eventos.</li>
+          <li>Comparar relógios escalares e relógios vetoriais.</li>
+          <li>Compreender algoritmos de eleição, como Bully e o em anel.</li>
+          <li>Estudar exclusão mútua distribuída e transações distribuídas.</li>
+          <li>Entender o funcionamento do Two-Phase Commit e a ideia de atomicidade.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Resumo rápido</h3>
+        <div class="mini-stat">
+          <div class="stat-box"><strong>Happens-Before</strong><span>ordem causal</span></div>
+          <div class="stat-box"><strong>Lamport</strong><span>contador lógico</span></div>
+          <div class="stat-box"><strong>Vetorial</strong><span>concorrência detectada</span></div>
+          <div class="stat-box"><strong>2PC</strong><span>tudo ou nada</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h3>1. Ausência de relógio físico global</h3>
+        <p>Em sistemas distribuídos, cada processo possui seu próprio relógio local e não há uma referência global exclusiva.</p>
+      </div>
+      <div class="card warning">
+        <p>
+          Em um ambiente distribuído, não existe um relógio físico único e global que permita dizer, de forma absoluta,
+          que todos os eventos ocorreram na mesma ordem temporal em todos os nós. Cada máquina tem um relógio local,
+          e os eventos podem ser observados por diferentes processos com base em relógios independentes.
+        </p>
+        <p>
+          Por isso, a sincronização em sistemas distribuídos precisa operar com noções de ordem causal e de contagem lógica,
+          e não com uma base temporal física comum a toda a rede.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>2. Happens-Before (a → b)</h3>
+        <p>A relação a → b representa uma ordem parcial entre eventos.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          A relação <strong>Happens-Before</strong>, representada por <strong>a → b</strong>, indica que um evento <strong>a</strong>
+          ocorre antes de um evento <strong>b</strong> em uma ordem causal. A relação é uma ordem parcial, não necessariamente uma ordem total global.
+        </p>
+
+        <ol class="simple-list">
+          <li><strong>Mesmo processo:</strong> se <strong>a</strong> acontece antes de <strong>b</strong> no mesmo processo, então <strong>a → b</strong>.</li>
+          <li><strong>Comunicação:</strong> se <strong>a</strong> é o envio de uma mensagem e <strong>b</strong> é a recepção da mesma mensagem, então <strong>a → b</strong>.</li>
+          <li><strong>Transitividade:</strong> se <strong>a → b</strong> e <strong>b → c</strong>, então <strong>a → c</strong>.</li>
+        </ol>
+
+        <p style="margin-top: 12px;">
+          Essa relação descreve <strong>causalidade</strong> e não depende de um relógio físico global. Ela ajuda a justificar quando um evento tem influência causal sobre outro.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplo</h4>
+        <p>
+          Se <strong>P1</strong> envia uma mensagem <strong>m</strong> e <strong>P2</strong> recebe essa mensagem, então o evento de envio e o evento de recepção possuem relação causal:
+        </p>
+        <div class="callout">
+          <strong>Exemplo causal</strong>
+          envio(m) → recepção(m)
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>3. Relógios lógicos de Lamport</h3>
+        <p>Um contador lógico que ordena causalmente eventos em um sistema distribuído.</p>
+      </div>
+
+      <div class="card warning">
+        <p>
+          O <strong>relógio lógico de Lamport</strong> é um contador lógico usado para ordenar eventos causalmente. O valor de um relógio local aumenta em eventos locais e também ao receber mensagens.
+        </p>
+        <p>
+          A regra importante é:
+        </p>
+        <div class="callout">
+          <strong>Fórmula de Lamport</strong>
+          L_novo = max(L_local, T_msg) + 1
+        </div>
+        <p>
+          Isso significa que, ao receber uma mensagem, o processo compara seu relógio local com o timestamp da mensagem e ajusta o contador para um valor maior que os dois. O evento de recepção terá timestamp maior que o evento de envio.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplo numérico</h4>
+        <p>Considere:</p>
+        <ul class="simple-list">
+          <li><strong>T_msg = 5</strong></li>
+          <li><strong>L_local = 2</strong></li>
+        </ul>
+        <p>Aplicando a fórmula:</p>
+        <div class="callout">
+          <strong>Cálculo</strong>
+          L_novo = max(2, 5) + 1 = 6
+        </div>
+        <p>
+          Então o relógio local do processo receptor passa a ser <strong>6</strong> após a recepção.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Propriedade importante</h4>
+        <p>
+          Vale a propriedade: <strong>Se a → b, então L(a) < L(b)</strong>. Mas o inverso não é necessariamente verdadeiro:
+          <strong>L(a) < L(b)</strong> não significa necessariamente que <strong>a → b</strong>.
+        </p>
+        <p>
+          Isso acontece porque os relógios lógicos capturam uma ordem causal provável, mas não identificam com precisão todos os eventos concorrentes.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>4. Relógios vetoriais</h3>
+        <p>Uma estrutura mais rica para representar o conhecimento causal entre processos.</p>
+      </div>
+
+      <div class="card success-box">
+        <p>
+          Os <strong>relógios vetoriais</strong> são utilizados quando queremos representar de forma mais precisa o conhecimento causal entre processos. Eles diferem dos relógios de Lamport porque não são apenas um valor escalar único.
+        </p>
+        <p>
+          Em um relógio vetorial, cada processo mantém um vetor com uma posição para cada processo. Esse vetor acompanha o conhecimento causal do sistema.
+        </p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Lamport</h4>
+          <p>Valor escalar único.</p>
+          <div class="mini-box">Permite ordenar eventos causalmente.</div>
+          <div class="mini-box">Não identifica toda concorrência de forma precisa.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Relógio vetorial</h4>
+          <p>Vetor com uma posição para cada processo.</p>
+          <div class="mini-box">Acompanha o conhecimento causal.</div>
+          <div class="mini-box">Permite detectar eventos concorrentes.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Concorrência</h4>
+        <p>
+          A notação <strong>a || b</strong> significa que os eventos <strong>a</strong> e <strong>b</strong> são <strong>concorrentes</strong>, isto é, não existe relação causal entre eles.
+        </p>
+        <p>
+          Em outras palavras, nem <strong>a → b</strong> nem <strong>b → a</strong> vale. Eles podem acontecer em paralelo, sem depender um do outro de forma causal.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>5. Algoritmo do Valentão (Bully Algorithm)</h3>
+        <p>Quando o coordenador falha, os demais processos elegem o maior ID ativo.</p>
+      </div>
+      <div class="card highlight">
+        <p>
+          Quando um processo percebe que o coordenador falhou, ele inicia uma eleição. No algoritmo do <strong>Valentão</strong> (Bully Algorithm), o processo envia mensagens de eleição para os processos com identificadores maiores.
+        </p>
+        <p>
+          Se houver um processo maior ativo, ele pode assumir a eleição e, eventualmente, o processo ativo com <strong>maior ID</strong> vence. O vencedor anuncia que é o novo coordenador.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplo com falha do coordenador</h4>
+        <p>Considere os processos <strong>P1, P4, P5, P6 e P7</strong> e assuma que <strong>P7</strong> era o coordenador e falhou.</p>
+        <p>
+          Se <strong>P4</strong> detectar a falha, ele consulta processos com ID maior. O processo ativo com maior identificador entre os que respondem será escolhido. Portanto, o maior ID ativo vence.
+        </p>
+        <div class="ring">
+          <div class="ring-node">P1</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">P4</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">P5</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">P6</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">P7</div>
+        </div>
+        <p style="margin-top:16px;">Se P7 falhar, e os outros processos continuam ativos, então o processo ativo com maior id entre P1, P4, P5 e P6 será eleito.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>6. Algoritmo em anel para eleição</h3>
+        <p>Os processos se organizam em um anel lógico e a eleição segue a sequência do anel.</p>
+      </div>
+      <div class="card highlight">
+        <p>
+          No algoritmo em anel, os processos estão organizados em um <strong>anel lógico</strong>. A mensagem de eleição circula pelo anel e os processos participam da eleição conforme a ordem do anel.
+        </p>
+        <p>
+          A principal diferença para o Bully é que, em Bully, a comunicação é direcionada aos processos com IDs maiores; em anel, a mensagem percorre o anel lógico seguindo a sequência do circuito.
+        </p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Bully</h4>
+          <p>Comunicação direcionada aos processos com IDs maiores.</p>
+          <div class="mini-box">Maior ID ativo vence.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Anel</h4>
+          <p>Mensagem percorre o anel lógico.</p>
+          <div class="mini-box">Eleição segue a sequência do anel.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>7. Exclusão mútua distribuída</h3>
+        <p>Garantir que apenas um processo por vez acesse uma região crítica ou recurso compartilhado.</p>
+      </div>
+      <div class="card warning">
+        <p>
+          A <strong>exclusão mútua distribuída</strong> tem como objetivo garantir que apenas um processo por vez acesse determinado recurso compartilhado ou região crítica distribuída.
+        </p>
+        <p>
+          Como em sistemas distribuídos não existe, necessariamente, uma memória compartilhada ou um único mecanismo de bloqueio central, a coordenação precisa acontecer por meio da comunicação distribuída entre os processos.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>8. Two-Phase Commit (2PC)</h3>
+        <p>Protocolo de atomicidade para transações distribuídas.</p>
+      </div>
+      <div class="card success-box">
+        <p>
+          O <strong>Two-Phase Commit (2PC)</strong> é um dos mecanismos fundamentais para garantir a atomicidade de transações distribuídas. Ele coordena participantes para que a transação seja confirmada ou abortada de forma consistente.
+        </p>
+        <p>
+          O protocolo trabalha com a ideia de <strong>“tudo ou nada”</strong>, ou seja, todos os participantes devem confirmar a transação ou todos devem abortá-la. Não deve existir um cenário que misture confirmação em alguns nós e abort em outros.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Papéis no protocolo</h4>
+        <ul class="simple-list">
+          <li><strong>Coordenador:</strong> inicia a transação e toma a decisão final.</li>
+          <li><strong>Participantes:</strong> executam a parte local da transação e votam sobre sua viabilidade.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Fase 1 — Preparação / Votação</h4>
+        <p>O coordenador envia a mensagem <strong>PREPARE</strong> para todos os participantes.</p>
+        <p>Cada participante verifica se consegue realizar a transação e responde:</p>
+        <ul class="simple-list">
+          <li><strong>VOTE_COMMIT</strong></li>
+          <li><strong>VOTE_ABORT</strong></li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Fase 2 — Decisão / Commit ou Abort</h4>
+        <p>
+          Se todos responderem <strong>VOTE_COMMIT</strong>, o coordenador envia <strong>GLOBAL_COMMIT</strong> para todos. Se pelo menos um participante responder <strong>VOTE_ABORT</strong>, o coordenador envia <strong>GLOBAL_ABORT</strong> para todos.
+        </p>
+        <div class="callout">
+          <strong>Regra central</strong>
+          Unanimidade de votos do tipo COMMIT é necessária para o COMMIT global.
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Atenção</strong>
+        O 2PC pode se tornar bloqueante caso o coordenador falhe em momentos críticos, especialmente após os participantes terem entrado em estado de preparação. Nesse cenário, a decisão pode ficar pendente até que a recuperação seja concluída.
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>Resumo de revisão</h3>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px;">
+          <span class="keyword">Relógio global = não existe</span>
+          <span class="keyword">Happens-Before = a → b</span>
+          <span class="keyword">Lamport = contador lógico</span>
+          <span class="keyword">L_novo = max(L_local, T_msg) + 1</span>
+          <span class="keyword">Vector Clock = mais preciso</span>
+          <span class="keyword">a || b = concorrência</span>
+          <span class="keyword">Bully = maior ID ativo vence</span>
+          <span class="keyword">Anel = eleição no sentido do anel</span>
+          <span class="keyword">Exclusão mútua = um por vez</span>
+          <span class="keyword">2PC = PREPARE + DECISÃO</span>
+          <span class="keyword">Commit = unanimidade</span>
+          <span class="keyword">Abort = um voto aborta</span>
+          <span class="keyword">Atomicidade = tudo ou nada</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz-box" id="quizSection">
+      <div class="section-head">
+        <h3>Questões objetivas</h3>
+        <p>Responda às 12 questões e revise os erros ao final.</p>
+      </div>
+
+      <div id="quizContainer"></div>
+      <div id="scorePanel" class="score-panel"></div>
+      <div id="reviewErrors" class="review-errors"></div>
+    </section>
+  </main>
+
+  <script>
+    const quizQuestions = [
+      {
+        question: 'Num sistema distribuído sem relógio físico global, o Processo P1 possui o relógio lógico local de Lamport em L1 = 4 e envia uma mensagem m para P2. O timestamp anexado à mensagem é T_msg = 5. Quando P2 recebe a mensagem, seu relógio local marcava L2 = 2. Para qual valor o relógio de P2 deverá ser ajustado?',
+        options: [
+          'L2 = 3',
+          'L2 = 5',
+          'L2 = 6',
+          'L2 = 7',
+          'L2 = 2'
+        ],
+        answer: 2,
+        explanation: 'A regra de Lamport é L_novo = max(L_local, T_msg) + 1. Portanto max(2, 5) + 1 = 6.',
+        concept: 'Relógios de Lamport'
+      },
+      {
+        question: 'No algoritmo de eleição do Valentão (Bully Algorithm), quando um processo percebe que o coordenador atual parou de responder, qual processo é garantidamente eleito como novo coordenador?',
+        options: [
+          'O primeiro processo que iniciou a eleição.',
+          'O processo ativo com menor identificador.',
+          'O processo ativo com maior identificador.',
+          'O processo que respondeu mais rapidamente.',
+          'O processo responsável pela comunicação entre clientes.'
+        ],
+        answer: 2,
+        explanation: 'No Bully Algorithm, o processo ativo com maior identificador é o que vence a eleição e assume o papel de coordenador.',
+        concept: 'Bully Algorithm'
+      },
+      {
+        question: 'Durante a Fase 1 do 2PC, N1 e N2 respondem VOTE_COMMIT, mas N3 responde VOTE_ABORT. O que o coordenador deve fazer na Fase 2?',
+        options: [
+          'Confirmar somente N1 e N2.',
+          'Enviar GLOBAL_ABORT para todos.',
+          'Reiniciar a eleição de coordenador.',
+          'Ignorar o voto de N3.',
+          'Aguardar até N3 mudar seu voto.'
+        ],
+        answer: 1,
+        explanation: 'Se qualquer participante responde VOTE_ABORT, a decisão correta é GLOBAL_ABORT para todos, preservando a atomicidade da transação.',
+        concept: 'Fase de decisão do 2PC'
+      },
+      {
+        question: 'Os relógios de Lamport permitem ordenar eventos causalmente, mas não identificam sozinhos toda situação de concorrência. Qual mecanismo permite detectar concorrência entre eventos com maior precisão?',
+        options: [
+          'Exclusão mútua centralizada.',
+          'Relógios Vetoriais.',
+          'Marshalling de mensagens.',
+          'Algoritmo Bully.',
+          'Algoritmo em Anel.'
+        ],
+        answer: 1,
+        explanation: 'Os relógios vetoriais mantêm informação causal por processo e são mais adequados para detectar eventos concorrentes.',
+        concept: 'Relógios Vetoriais'
+      },
+      {
+        question: 'Qual é uma das regras fundamentais da relação Happens-Before?',
+        options: [
+          'Se um processo envia uma mensagem e outro processo recebe essa mensagem, então o envio ocorre após a recepção.',
+          'Se a acontece antes de b no mesmo processo, então a → b.',
+          'Se a e b forem eventos concorrentes, então a → b.',
+          'Se duas mensagens forem entregues no mesmo canal, então elas têm relação de causalidade direta.',
+          'Se dois processos têm relógios diferentes, então seus eventos são sempre concorrentes.'
+        ],
+        answer: 1,
+        explanation: 'Na relação Happens-Before, se a ocorre antes de b no mesmo processo, temos a → b, que representa ordem causal local.',
+        concept: 'Happens-Before'
+      },
+      {
+        question: 'Qual alternativa representa corretamente a transitividade da relação Happens-Before?',
+        options: [
+          'Se a → b e b → c, então b → a.',
+          'Se a → b e b → c, então a → c.',
+          'Se a → b e b → c, então a || c.',
+          'Se a → b e b → c, então L(a) > L(c).',
+          'Se a → b e b → c, então as mensagens são sempre perdidas.'
+        ],
+        answer: 1,
+        explanation: 'A transitividade é um dos pilares da causalidade: se a precede b e b precede c, então a precede c.',
+        concept: 'Transitividade da causalidade'
+      },
+      {
+        question: 'Qual é a diferença principal entre relógios de Lamport e relógios vetoriais?',
+        options: [
+          'Lamport usa um vetor e relógio vetorial usa um contador escalar.',
+          'Relógios vetoriais são apenas uma versão mais lenta de Lamport.',
+          'Lamport representa um contador escalar, enquanto o relógio vetorial mantém um vetor com informações por processo.',
+          'Relógios de Lamport ignoram ordem causal, enquanto vetoriais ignoram concorrência.',
+          'Os relógios vetoriais não são usados em sistemas distribuídos.'
+        ],
+        answer: 2,
+        explanation: 'Lamport usa um valor escalar, enquanto os relógios vetoriais mantêm um vetor com uma posição por processo, permitindo maior precisão causal.',
+        concept: 'Lamport vs. Relógio Vetorial'
+      },
+      {
+        question: 'Considere dois eventos a e b. A notação a || b significa que:',
+        options: [
+          'a e b são equivalentes em relação de ordem temporal.',
+          'a causou b diretamente por comunicação.',
+          'a e b são concorrentes, isto é, não existe relação causal entre eles.',
+          'a e b pertencem ao mesmo processo e devem ser executados em sequência.',
+          'a e b foram gerados por um mesmo relógio global.'
+        ],
+        answer: 2,
+        explanation: 'A notação a || b denota concorrência: não existe relação causal entre os eventos.',
+        concept: 'Concorrência e a || b'
+      },
+      {
+        question: 'No algoritmo em anel para eleição, como a decisão é conduzida?',
+        options: [
+          'Cada processo envia mensagens apenas para os processos com ID menor.',
+          'A mensagem de eleição circula pelo anel lógico e os processos participam conforme a sequência do anel.',
+          'O processo com menor ID fica responsável por todos os processos do anel.',
+          'O anel centraliza a eleição em um servidor de metadados.',
+          'A eleição só pode ocorrer se todos os processos tiverem relógios iguais.'
+        ],
+        answer: 1,
+        explanation: 'No algoritmo em anel, a mensagem percorre o anel lógico e a eleição segue a sequência organizada do anel.',
+        concept: 'Algoritmo em anel'
+      },
+      {
+        question: 'Qual é o principal objetivo da exclusão mútua distribuída?',
+        options: [
+          'Aumentar o número de mensagens trocadas entre processos.',
+          'Garantir que apenas um processo por vez acesse um recurso compartilhado ou região crítica distribuída.',
+          'Substituir a lógica de Lamport por um relógio físico global.',
+          'Embaralhar o vetor de relógio para melhorar a concorrência.',
+          'Definir a ordem de chegada das mensagens sem comunicação.'
+        ],
+        answer: 1,
+        explanation: 'A exclusão mútua distribuída busca evitar que dois processos acessem simultaneamente determinado recurso crítico ou região compartilhada.',
+        concept: 'Exclusão mútua distribuída'
+      },
+      {
+        question: 'Na Fase 1 do 2PC, qual é o papel central do coordenador e dos participantes?',
+        options: [
+          'O coordenador apenas registra as mensagens, e os participantes decidem o commit final.',
+          'O coordenador envia PREPARE e coleta os votos; os participantes verificam se podem executar a transação e respondem VOTE_COMMIT ou VOTE_ABORT.',
+          'O coordenador nunca participa da transação; os participantes sempre confirmam diretamente.',
+          'O coordenador e os participantes devem ignorar qualquer falha para manter a consistência.',
+          'Os participantes votam apenas se o relógio vetorial for maior que o do coordenador.'
+        ],
+        answer: 1,
+        explanation: 'Na primeira fase do 2PC, o coordenador envia PREPARE, e os participantes votam se conseguem ou não confirmar a transação.',
+        concept: '2PC — Fase de preparação e votação'
+      },
+      {
+        question: 'Qual afirmação expressa corretamente a atomicidade do 2PC e a regra de unanimidade?',
+        options: [
+          'Qualquer participante pode decidir GLOBAL_COMMIT independentemente dos outros.',
+          'O 2PC garante que a transação é confirmada ou abortada de forma consistente; apenas quando todos votam VOTE_COMMIT o coordenador pode enviar GLOBAL_COMMIT.',
+          'No 2PC, um único VOTE_ABORT nunca influencia a decisão final.',
+          'Atomicidade significa que o coordenador toma a decisão sem comunicar os participantes.',
+          'A regra de unanimidade é aplicável somente no algoritmo Bully.'
+        ],
+        answer: 1,
+        explanation: 'O 2PC segue a regra de atomicidade: tudo ou nada. Só é possível GLOBAL_COMMIT quando todos os participantes votam para confirmar.',
+        concept: 'Atomicidade do 2PC'
+      }
+    ];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const scorePanel = document.getElementById('scorePanel');
+    const reviewErrors = document.getElementById('reviewErrors');
+
+    const state = {
+      currentIndex: 0,
+      selected: Array(quizQuestions.length).fill(null),
+      results: Array(quizQuestions.length).fill(null),
+      showingFeedback: false
+    };
+
+    function getLetter(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function renderQuestion() {
+      const question = quizQuestions[state.currentIndex];
+      const questionNumber = state.currentIndex + 1;
+      const selected = state.selected[state.currentIndex];
+      const result = state.results[state.currentIndex];
+      const correctLetter = getLetter(question.answer);
+
+      const optionsHtml = question.options.map((option, index) => {
+        const checked = selected === index ? 'checked' : '';
+        return `
+          <label class="option-label">
+            <input type="radio" name="q${state.currentIndex}" value="${index}" ${checked} />
+            <span class="option-letter">${getLetter(index)}</span>
+            <span>${option}</span>
+          </label>
+        `;
+      }).join('');
+
+      const feedbackHtml = state.showingFeedback && result !== null
+        ? `
+          <div class="answer-result visible ${result ? 'correct' : 'incorrect'}">
+            <strong>${result ? 'Correto!' : 'Incorreto.'}</strong>
+            <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+            <p><strong>Explicação:</strong> ${question.explanation}</p>
+            <p><strong>Conceito avaliado:</strong> ${question.concept}</p>
+          </div>
+        `
+        : '';
+
+      quizContainer.innerHTML = `
+        <div class="question-card">
+          <h4>Pergunta ${questionNumber} de ${quizQuestions.length}</h4>
+          <p>${question.question}</p>
+          <div class="options">${optionsHtml}</div>
+          ${feedbackHtml}
+          <div class="nav-buttons">
+            <button class="button secondary" type="button" id="prevQuestion" ${state.currentIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button class="button" type="button" id="nextQuestion">${state.showingFeedback ? (state.currentIndex === quizQuestions.length - 1 ? 'Finalizar quiz' : 'Próxima pergunta') : 'Responder'}</button>
+          </div>
+        </div>
+      `;
+
+      const optionInputs = quizContainer.querySelectorAll('input[type="radio"]');
+      optionInputs.forEach(input => {
+        input.addEventListener('change', event => {
+          state.selected[state.currentIndex] = Number(event.target.value);
+        });
+      });
+
+      document.getElementById('prevQuestion').addEventListener('click', () => {
+        if (state.currentIndex > 0) {
+          state.currentIndex -= 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        }
+      });
+
+      document.getElementById('nextQuestion').addEventListener('click', () => {
+        if (!state.showingFeedback) {
+          const current = state.selected[state.currentIndex];
+          if (current === null || current === undefined) {
+            alert('Selecione uma alternativa antes de responder.');
+            return;
+          }
+
+          const isCorrect = current === question.answer;
+          state.results[state.currentIndex] = isCorrect;
+          state.showingFeedback = true;
+          renderQuestion();
+          return;
+        }
+
+        if (state.currentIndex < quizQuestions.length - 1) {
+          state.currentIndex += 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      });
+    }
+
+    function showResults() {
+      const total = quizQuestions.length;
+      const correct = state.results.filter(Boolean).length;
+      const errors = total - correct;
+      const percent = Math.round((correct / total) * 100);
+      const performance = percent >= 80 ? 'Excelente!' : percent >= 70 ? 'Bom desempenho!' : percent >= 50 ? 'Você está no caminho certo.' : 'Revise os conceitos principais do módulo.';
+
+      scorePanel.classList.add('visible');
+      scorePanel.innerHTML = `
+        <h3>Resultado do quiz</h3>
+        <p>Você acertou <strong>${correct}</strong> de <strong>${total}</strong> questões — <strong>${percent}%</strong>.</p>
+        <p>Erros: <strong>${errors}</strong></p>
+        <p><strong>${performance}</strong></p>
+        <div class="nav-buttons" style="margin-top:16px;">
+          <button class="button secondary" type="button" id="restartQuiz">Reiniciar quiz</button>
+        </div>
+      `;
+
+      const wrongQuestions = quizQuestions.filter((q, index) => state.results[index] === false);
+
+      if (wrongQuestions.length > 0) {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          ${wrongQuestions.map((q, idx) => {
+            const originalIndex = quizQuestions.indexOf(q);
+            const selectedValue = state.selected[originalIndex];
+            const selectedLetter = selectedValue === null ? '—' : getLetter(selectedValue);
+            const correctLetter = getLetter(q.answer);
+            return `
+              <div class="review-item">
+                <p><strong>Questão ${originalIndex + 1}</strong></p>
+                <p><strong>Resposta selecionada:</strong> ${selectedLetter}</p>
+                <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+                <p><strong>Explicação:</strong> ${q.explanation}</p>
+              </div>
+            `;
+          }).join('')}
+        `;
+      } else {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          <p>Parabéns! Você acertou todas as questões. Revise o resumo do módulo para reforçar os principais conceitos.</p>
+        `;
+      }
+
+      quizContainer.innerHTML = '<p>Quiz concluído. Abaixo está sua pontuação e a revisão dos erros.</p>';
+
+      document.getElementById('restartQuiz').addEventListener('click', () => {
+        state.currentIndex = 0;
+        state.selected = Array(quizQuestions.length).fill(null);
+        state.results = Array(quizQuestions.length).fill(null);
+        state.showingFeedback = false;
+        scorePanel.classList.remove('visible');
+        reviewErrors.classList.remove('visible');
+        renderQuestion();
+      });
+    }
+
+    renderQuestion();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sd_theme_pref', newTheme);
+      document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const savedTheme = localStorage.getItem('sd_theme_pref') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  </script>
+</body>
+</html>

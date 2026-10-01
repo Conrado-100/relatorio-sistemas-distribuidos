@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo 3 — Redes Peer-to-Peer (P2P), Tabelas Hash Distribuídas (DHT) e Sistemas de Arquivos Distribuídos</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success-color: #16a34a;
+      --success-light: #f0fdf4;
+      --warning-color: #d97706;
+      --warning-light: #fffbeb;
+      --danger-color: #dc2626;
+      --danger-light: #fef2f2;
+      --border-color: #e2e8f0;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-card: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary-color: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-light: rgba(96, 165, 250, 0.12);
+      --success-color: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.12);
+      --warning-color: #fbbf24;
+      --warning-light: rgba(251, 191, 36, 0.08);
+      --danger-color: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.12);
+      --border-color: #334155;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    a { color: inherit; }
+
+    .module-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+    }
+
+    .main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      background: var(--primary-light);
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+    }
+
+    .brand-info { min-width: 0; }
+    .brand-info h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+    .brand-info p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 14px 0 12px;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 820px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+    }
+
+    .objective-list,
+    .simple-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-secondary);
+    }
+
+    .objective-list li,
+    .simple-list li {
+      margin-bottom: 8px;
+    }
+
+    .mini-stat {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini-stat .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.3rem;
+      color: var(--primary-color);
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 {
+      margin: 0 0 6px;
+      font-size: clamp(1.6rem, 2vw, 2rem);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .highlight {
+      border-left: 4px solid var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .warning {
+      border-left: 4px solid var(--warning-color);
+      background: var(--warning-light);
+    }
+
+    .success-box {
+      border-left: 4px solid var(--success-color);
+      background: var(--success-light);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .compare-card h4 {
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+
+    .mini-box {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      border: 1px dashed var(--border-color);
+      margin-top: 10px;
+      color: var(--text-secondary);
+    }
+
+    .ring {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--text-primary);
+    }
+
+    .ring-node {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      min-width: 74px;
+      text-align: center;
+    }
+
+    .ring-arrow {
+      color: var(--primary-color);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--warning-light);
+      border: 1px solid rgba(217, 119, 6, 0.4);
+    }
+
+    .callout strong {
+      color: var(--warning-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .quiz-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .question-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .question-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      color: var(--text-primary);
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .option-label input {
+      margin-top: 4px;
+      accent-color: var(--primary-color);
+    }
+
+    .option-letter {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .answer-result {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .answer-result.visible {
+      display: block;
+    }
+
+    .answer-result.correct {
+      background: var(--success-light);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: var(--text-primary);
+    }
+
+    .answer-result.incorrect {
+      background: var(--danger-light);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: var(--text-primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      color: white;
+      background: var(--primary-color);
+    }
+
+    .button.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .score-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .score-panel.visible {
+      display: block;
+    }
+
+    .score-panel h3 {
+      margin: 0 0 10px;
+    }
+
+    .review-errors {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .review-errors.visible {
+      display: block;
+    }
+
+    .review-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      margin-top: 14px;
+    }
+
+    .review-item p {
+      margin: 8px 0;
+      color: var(--text-secondary);
+    }
+
+    .keyword {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .mini-stat {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quiz-box,
+      .card,
+      .hero {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="back-link" href="../index.html">← Voltar ao curso</a>
+        <div class="brand-info">
+          <h1>Módulo 3</h1>
+          <p>Redes Peer-to-Peer (P2P), Tabelas Hash Distribuídas (DHT) e Sistemas de Arquivos Distribuídos</p>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo escuro">🌙</button>
+    </div>
+  </header>
+
+  <main class="module-wrap" data-module="3">
+    <section class="hero">
+      <span class="eyebrow">Sistemas Distribuídos</span>
+      <h2>Redes Peer-to-Peer (P2P), Tabelas Hash Distribuídas (DHT) e Sistemas de Arquivos Distribuídos</h2>
+      <p>
+        Este módulo explora arquiteturas P2P, organização de dados em redes distribuídas, a noção de tabelas hash distribuídas,
+        o protocolo Chord e a estrutura de sistemas de arquivos distribuídos como o GFS. O foco está em como a rede organiza
+        a localização dos dados, como os nós cooperam e como a transferência de conteúdo é separada do controle de metadados.
+      </p>
+    </section>
+
+    <div class="grid-two">
+      <section class="card">
+        <h3>Objetivos de aprendizagem</h3>
+        <ul class="objective-list">
+          <li>Compreender arquiteturas Peer-to-Peer e suas diferenças de organização.</li>
+          <li>Entender a ideia de tabelas hash distribuídas (DHT).</li>
+          <li>Identificar o funcionamento do Chord e da regra do sucessor.</li>
+          <li>Reconhecer a importância da Finger Table e da busca em O(log N).</li>
+          <li>Comparar redes P2P não estruturadas e estruturadas.</li>
+          <li>Entender sistemas de arquivos distribuídos, como NFS e GFS.</li>
+          <li>Conhecer a função do Master, dos Chunkservers e dos chunks de 64 MB.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Resumo rápido</h3>
+        <div class="mini-stat">
+          <div class="stat-box"><strong>P2P</strong><span>nós podem ser clientes e servidores</span></div>
+          <div class="stat-box"><strong>DHT</strong><span>chave e valor distribuídos</span></div>
+          <div class="stat-box"><strong>Chord</strong><span>anel lógico</span></div>
+          <div class="stat-box"><strong>GFS</strong><span>Master + Chunkservers</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h3>1. Redes Peer-to-Peer estruturadas</h3>
+        <p>A organização da rede e da localização dos dados segue um protocolo ou algoritmo matemático.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          Uma <strong>rede Peer-to-Peer (P2P) estruturada</strong> organiza a topologia da rede e a localização dos dados segundo um protocolo
+          ou algoritmo matemático, como uma DHT. Nesse modelo, a busca é mais eficiente porque a rede não depende apenas de inundação ou descoberta cega.
+        </p>
+        <p>
+          A localização dos dados é organizada, o mapeamento dos recursos é definido e a busca pode ser direcionada com menor custo. Exemplos citados no material incluem <strong>Chord</strong> e <strong>Kademlia</strong>.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Diferença em relação ao P2P não estruturado</h4>
+        <p>
+          Em um P2P não estruturado, a topologia não é rígida e a localização dos dados não é previamente determinada. A busca frequentemente usa flooding/inundação. Em contraste, em um P2P estruturado, a topologia lógica é organizada e os dados possuem localização determinada pelo protocolo.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>2. Tabela Hash Distribuída — DHT</h3>
+        <p>Uma tabela hash convencional, mas distribuída entre vários nós.</p>
+      </div>
+
+      <div class="card warning">
+        <p>
+          Uma <strong>DHT (Tabela Hash Distribuída)</strong> fornece um serviço semelhante a uma tabela hash tradicional, porém distribuído entre diversos nós. A ideia central é manter pares do tipo <strong>(chave, valor)</strong> e distribuir a responsabilidade de armazenamento das chaves entre os nós da rede.
+        </p>
+        <p>
+          A responsabilidade pela sua armazenagem é compartilhada pela rede. Em termos práticos, a associação entre um valor e um nó costuma ser tratada com base em um hash da chave ou do recurso, por exemplo: <strong>hash de um arquivo → nó responsável pelo armazenamento</strong>.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>3. Chord e Finger Table</h3>
+        <p>Chord organiza os nós em um anel lógico e usa atalhos para localizar chaves.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          O <strong>Chord</strong> é um protocolo de DHT em que os nós são organizados em um <strong>anel lógico</strong>.
+          O espaço de identificadores é definido por <strong>2^m posições</strong>. Os nós e as chaves recebem identificadores e a chave é atribuída ao <strong>sucessor</strong> do identificador.
+        </p>
+        <p>
+          A <strong>Finger Table</strong> é uma tabela mantida em cada nó e possui, no máximo, <strong>m entradas</strong>. Ela fornece atalhos no anel e permite que a busca percorra o anel com desempenho mais eficiente, chegando a <strong>O(log N)</strong>.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Regra do sucessor</h4>
+        <p>
+          A regra do sucessor é: <strong>sucessor(k)</strong> é o primeiro nó cujo identificador seja igual ou suceda <strong>k</strong> no sentido circular do anel.
+        </p>
+        <p>
+          Em outras palavras, se a chave está em um identificador k, o nó responsável é o primeiro nó a partir daquele ponto no sentido circular, em ordem crescente no anel.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplo didático com m = 3</h4>
+        <p>Se <strong>m = 3</strong>, então <strong>2^3 = 8 posições</strong>. Imagine um anel com identificadores de 0 a 7. Se a chave for <strong>k = 5</strong>, a busca identifica o primeiro nó cujo identificador é igual ou sucede 5 no sentido circular do anel. Esse nó é o sucessor de k.</p>
+        <div class="ring">
+          <div class="ring-node">0</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">1</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">2</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">3</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">4</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">5</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">6</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">7</div>
+          <div class="ring-arrow">→</div>
+          <div class="ring-node">0</div>
+        </div>
+        <p style="margin-top:16px;">Nesse caso, o sucessor de 5 é o primeiro nó cujo identificador é igual ou maior que 5 no anel circular. Se não houver, volta ao início do anel.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>4. P2P não estruturado versus P2P estruturado</h3>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>P2P não estruturado</h4>
+          <p>Topologia sem organização rígida e localização dos dados não é previamente determinada.</p>
+          <div class="mini-box">Busca frequentemente usa flooding/inundação.</div>
+          <div class="mini-box">Exemplo: Gnutella clássico.</div>
+        </div>
+        <div class="compare-card">
+          <h4>P2P estruturado</h4>
+          <p>Topologia lógica organizada e a localização dos dados é determinada pelo protocolo.</p>
+          <div class="mini-box">Usa DHT e permite localização eficiente.</div>
+          <div class="mini-box">Exemplos: Chord e Kademlia.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplos citados no material</h4>
+        <ul class="simple-list">
+          <li><strong>Napster:</strong> P2P híbrido/centralizado.</li>
+          <li><strong>Gnutella:</strong> P2P não estruturado.</li>
+          <li><strong>BitTorrent:</strong> P2P estruturado.</li>
+          <li><strong>Chord:</strong> DHT estruturada.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>5. Sistemas de arquivos distribuídos</h3>
+        <p>Arquivo compartilhado em rede, com organização lógica e disponibilidade distribuída.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          Um <strong>sistema de arquivos distribuído (DFS)</strong> disponibiliza arquivos em múltiplos nós ou computadores conectados em rede.
+          O material apresenta como exemplos <strong>NFS</strong> e <strong>GFS</strong>.
+        </p>
+        <p>
+          O <strong>NFS</strong> (Network File System) é um sistema de arquivos em rede e o <strong>GFS</strong> (Google File System) é uma arquitetura voltada para grande escala e alto volume de dados.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>6. Google File System — GFS</h3>
+        <p>Arquitetura com Master e Chunkservers.</p>
+      </div>
+
+      <div class="card success-box">
+        <p>
+          O <strong>GFS</strong> organiza os arquivos em chunks, que têm tamanho de <strong>64 MB</strong>. Cada chunk é armazenado em <strong>Chunkservers</strong>, que são responsáveis por guardar os dados reais.
+        </p>
+        <p>
+          O <strong>Master</strong> é responsável por <strong>metadados</strong>, mapeamento dos arquivos para os chunks, controle geral e localização dos dados. Ele não transfere o payload completo dos arquivos para o cliente; a transferência do conteúdo ocorre diretamente entre o cliente e os Chunkservers.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Fluxo da leitura ou escrita</h4>
+        <ol class="simple-list">
+          <li>O cliente consulta o Master para descobrir onde os dados estão.</li>
+          <li>O Master responde com metadados e localização dos chunks.</li>
+          <li>O cliente se comunica diretamente com o Chunkserver responsável.</li>
+          <li>A transferência do payload ocorre entre cliente e Chunkserver.</li>
+        </ol>
+        <p>
+          Esse desenho evita que o Master vire gargalo de transferência, porque ele fica responsável pela camada de controle e pelos metadados, e não pelo volume total do arquivo.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>Resumo de revisão</h3>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px;">
+          <span class="keyword">P2P = nós podem atuar como clientes e servidores</span>
+          <span class="keyword">P2P não estruturado = flooding/inundação</span>
+          <span class="keyword">P2P estruturado = topologia lógica organizada</span>
+          <span class="keyword">DHT = distribuição de chave/valor</span>
+          <span class="keyword">Chord = anel lógico</span>
+          <span class="keyword">sucessor(k) = primeiro nó igual ou posterior a k</span>
+          <span class="keyword">Finger Table = atalhos para acelerar buscas</span>
+          <span class="keyword">Chord = O(log N)</span>
+          <span class="keyword">GFS = Master + Chunkservers</span>
+          <span class="keyword">Master = metadados</span>
+          <span class="keyword">Chunkserver = dados</span>
+          <span class="keyword">chunk = 64 MB</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz-box" id="quizSection">
+      <div class="section-head">
+        <h3>Questões objetivas</h3>
+        <p>Responda as 12 questões e revise os erros ao final.</p>
+      </div>
+
+      <div id="quizContainer"></div>
+      <div id="scorePanel" class="score-panel"></div>
+      <div id="reviewErrors" class="review-errors"></div>
+    </section>
+  </main>
+
+  <script>
+    const quizQuestions = [
+      {
+        question: 'No protocolo Chord, utilizado para implementação de Tabelas Hash Distribuídas (DHT), os nós e as chaves são organizados num anel lógico com espaço de identificadores de 2^m posições. Caso uma chave com identificador k seja inserida na rede, a qual nó ela será atribuída?',
+        options: [
+          'Ao nó com o menor identificador numérico de todo o anel, independentemente de k.',
+          'Ao primeiro nó cujo identificador seja igual ou suceda k na ordem circular do anel (sucessor(k)).',
+          'Ao nó Mestre do sistema, que centraliza todas as chaves no formato (chave, valor).',
+          'A todos os nós ativos da rede simultaneamente através de mensagens de inundação (flooding).',
+          'Ao nó cujo identificador seja exatamente a metade da distância entre 0 e k.'
+        ],
+        answer: 1,
+        explanation: 'Em Chord, a chave é atribuída ao sucessor(k): o primeiro nó cujo identificador é igual ou sucede k no anel circular.',
+        concept: 'Chord / sucessor(k)'
+      },
+      {
+        question: 'Para evitar que a busca por um dado num anel Chord de N nós tenha complexidade linear O(N), o protocolo utiliza uma estrutura de dados em cada nó chamada Finger Table. Qual é o impacto direto do uso da Finger Table no processo de consulta?',
+        options: [
+          'Permite realizar buscas por inundação em todos os nós da rede em tempo constante O(1).',
+          'Armazena cópias completas de todos os arquivos do sistema na memória RAM do cliente.',
+          'Permite dar saltos pelo anel, reduzindo a complexidade de localização de qualquer chave para O(log N).',
+          'Garante que a troca de contexto entre processos ocorra sem overhead.',
+          'Elimina a necessidade de utilizar funções de hashing.'
+        ],
+        answer: 2,
+        explanation: 'A Finger Table fornece atalhos no anel e permite localizar a chave com complexidade O(log N).',
+        concept: 'Finger Table / complexidade O(log N)'
+      },
+      {
+        question: 'Em relação às arquiteturas Peer-to-Peer (P2P), uma rede não estruturada, como o protocolo Gnutella clássico, diferencia-se de uma rede estruturada baseada em DHT principalmente porque:',
+        options: [
+          'Redes não estruturadas utilizam obrigatoriamente um servidor central.',
+          'Redes não estruturadas não mantêm uma topologia rígida nem um mapeamento exato de dados, recorrendo frequentemente a flooding.',
+          'Redes estruturadas não conseguem localizar recursos presentes nos nós ativos.',
+          'Redes não estruturadas possuem complexidade garantida de O(log N).',
+          'Redes estruturadas não permitem compartilhamento simultâneo.'
+        ],
+        answer: 1,
+        explanation: 'P2P não estruturado não organiza rigidamente a rede nem a localização dos dados; a busca geralmente usa flooding.',
+        concept: 'P2P não estruturado'
+      },
+      {
+        question: 'No Google File System (GFS), os arquivos são divididos em blocos chamados chunks. A respeito da arquitetura do GFS, assinale a opção correta:',
+        options: [
+          'O Master transfere diretamente todo o conteúdo dos arquivos para os clientes.',
+          'O tamanho padrão do chunk é 64 KB.',
+          'O Master armazena metadados, enquanto a leitura e escrita do payload ocorre diretamente entre cliente e Chunkservers.',
+          'Todos os Chunkservers executam o escalonador de longo prazo.',
+          'O GFS não suporta replicação de blocos.'
+        ],
+        answer: 2,
+        explanation: 'No GFS, o Master cuida dos metadados e o cliente troca o payload diretamente com os Chunkservers.',
+        concept: 'GFS / Master / Chunkserver'
+      },
+      {
+        question: 'Qual afirmação descreve corretamente a natureza de uma DHT?',
+        options: [
+          'É uma arquitetura centralizada que usa um nó mestre para armazenar todos os dados.',
+          'É uma tabela hash tradicional replicada em um único computador para tornar a busca mais rápida.',
+          'É um serviço de chave/valor distribuído entre vários nós da rede.',
+          'É a mesma coisa que um sistema de arquivos com chunks de 64 MB.',
+          'É a estrutura usada para implementar a camada TCP do transporte.'
+        ],
+        answer: 2,
+        explanation: 'A DHT possui a ideia de chave e valor distribuídos entre os nós, funcionando como uma tabela hash em ambiente distribuído.',
+        concept: 'DHT'
+      },
+      {
+        question: 'Qual alternativa melhor expressa a diferença entre P2P estruturado e P2P não estruturado?',
+        options: [
+          'P2P não estruturado é sempre centralizado e usa um só servidor para o controle.',
+          'P2P estruturado possui topologia lógica organizada e mapeamento de dados, enquanto o não estruturado não oferece essa organização rígida.',
+          'P2P estruturado não usa hashes e não tem suporte para DHT.',
+          'P2P não estruturado é impossível em redes distribuídas.',
+          'As duas arquiteturas são idênticas e diferem apenas na linguagem de programação.'
+        ],
+        answer: 1,
+        explanation: 'Na arquitetura estruturada, a localização desses dados é organizada, ao passo que no P2P não estruturado ela é menos previsível e frequentemente depende de flooding.',
+        concept: 'P2P estruturado vs não estruturado'
+      },
+      {
+        question: 'No modelo Chord, qual é a função principal da Finger Table?',
+        options: [
+          'Centralizar os metadados do sistema em um único nó.',
+          'Definir a política de escalonamento da CPU em cada máquina.',
+          'Fornecer atalhos para acelerar a busca no anel lógico.',
+          'Armazenar todos os chunks de 64 MB em um único servidor.',
+          'Substituir a regra do sucessor em qualquer operação.'
+        ],
+        answer: 2,
+        explanation: 'A Finger Table contém atalhos que reduzem a distância percorrida para localizar uma chave no anel.',
+        concept: 'Finger Table'
+      },
+      {
+        question: 'Qual é a principal razão para o Master no GFS não transferir todo o conteúdo dos arquivos diretamente para os clientes?',
+        options: [
+          'Porque ele não é capaz de encaminhar dados em uma rede distribuída.',
+          'Porque o Master deve apenas controlar metadados e não participar do fluxo de dados.',
+          'Porque o Master foi substituído por um Chunkserver em todas as operações.',
+          'Porque o tamanho do chunk em GFS é fixo em 1 MB.',
+          'Porque as consultas do cliente sempre passam por DHT e não por Master.'
+        ],
+        answer: 1,
+        explanation: 'A separação entre controle e dados é essencial: o Master cuida de metadados e o cliente acessa diretamente os Chunkservers.',
+        concept: 'GFS / separação fluxo de controle e fluxo de dados'
+      },
+      {
+        question: 'Qual é o papel do Chunkserver no GFS?',
+        options: [
+          'Armazenar e fornecer os dados reais dos chunks.',
+          'Controlar a camada de transporte TCP da rede.',
+          'Publicar a interface IDL dos clientes.',
+          'Executar o algoritmo de hashing consistente aplicado ao cliente.',
+          'Gerir a tabela de processos do servidor central.'
+        ],
+        answer: 0,
+        explanation: 'Chunkservers armazenam os chunks e participam diretamente da transferência de dados entre cliente e servidor de arquivos.',
+        concept: 'Chunkserver'
+      },
+      {
+        question: 'Qual dos exemplos abaixo representa corretamente um caso de P2P híbrido ou centralizado, segundo o material?',
+        options: [
+          'Chord',
+          'Napster',
+          'Gnutella clássico',
+          'Kademlia',
+          'BitTorrent clássico sem servidor'
+        ],
+        answer: 1,
+        explanation: 'Napster é citado como um exemplo de P2P híbrido/centralizado.',
+        concept: 'Arquiteturas P2P'
+      },
+      {
+        question: 'Em um anel Chord, qual interpretação correta da função sucessor(k) ?',
+        options: [
+          'É o nó mais distante do identificador k na rede.',
+          'É o primeiro nó cujo identificador seja igual ou suceda k no sentido circular do anel.',
+          'É o nó que contém todos os metadados do sistema.',
+          'É o nó responsável por processar apenas o tráfego de controle e nunca o payload.',
+          'É o nó que armazena a Finger Table exclusivamente para o cliente.'
+        ],
+        answer: 1,
+        explanation: 'A regra do sucessor define exatamente o primeiro nó no sentido circular que assume a chave ou a segue no anel.',
+        concept: 'sucessor(k)'
+      },
+      {
+        question: 'Qual afirmar é correta sobre hashing consistente no contexto de uma DHT?',
+        options: [
+          'Ele centraliza todas as chaves em um único nó para evitar falhas.',
+          'Ele permite distribuir chaves por nós de forma organizada, minimizando o impacto de mudanças na rede.',
+          'Ele elimina a necessidade de Finger Table em qualquer protocolo.',
+          'Ele substitui os metadados do GFS por chunks de 64 MB.',
+          'Ele obriga que todos os nós façam flooding para localizar os dados.'
+        ],
+        answer: 1,
+        explanation: 'Hashing consistente ajuda a mapear identificadores e chaves em um conjunto de nós, mantendo a organização do anel e a distribuição dos dados.',
+        concept: 'Hashing consistente'
+      },
+    ];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const scorePanel = document.getElementById('scorePanel');
+    const reviewErrors = document.getElementById('reviewErrors');
+
+    const state = {
+      currentIndex: 0,
+      selected: Array(quizQuestions.length).fill(null),
+      results: Array(quizQuestions.length).fill(null),
+      showingFeedback: false
+    };
+
+    function getLetter(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function renderQuestion() {
+      const question = quizQuestions[state.currentIndex];
+      const questionNumber = state.currentIndex + 1;
+      const selected = state.selected[state.currentIndex];
+      const result = state.results[state.currentIndex];
+      const correctLetter = getLetter(question.answer);
+
+      const optionsHtml = question.options.map((option, index) => {
+        const checked = selected === index ? 'checked' : '';
+        return `
+          <label class="option-label">
+            <input type="radio" name="q${state.currentIndex}" value="${index}" ${checked} />
+            <span class="option-letter">${getLetter(index)}</span>
+            <span>${option}</span>
+          </label>
+        `;
+      }).join('');
+
+      const feedbackHtml = state.showingFeedback && result !== null
+        ? `
+          <div class="answer-result visible ${result ? 'correct' : 'incorrect'}">
+            <strong>${result ? 'Correto!' : 'Incorreto.'}</strong>
+            <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+            <p><strong>Explicação:</strong> ${question.explanation}</p>
+            <p><strong>Conceito avaliado:</strong> ${question.concept}</p>
+          </div>
+        `
+        : '';
+
+      quizContainer.innerHTML = `
+        <div class="question-card">
+          <h4>Pergunta ${questionNumber} de ${quizQuestions.length}</h4>
+          <p>${question.question}</p>
+          <div class="options">${optionsHtml}</div>
+          ${feedbackHtml}
+          <div class="nav-buttons">
+            <button class="button secondary" type="button" id="prevQuestion" ${state.currentIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button class="button" type="button" id="nextQuestion">${state.showingFeedback ? (state.currentIndex === quizQuestions.length - 1 ? 'Finalizar quiz' : 'Próxima pergunta') : 'Responder'}</button>
+          </div>
+        </div>
+      `;
+
+      const optionInputs = quizContainer.querySelectorAll('input[type="radio"]');
+      optionInputs.forEach(input => {
+        input.addEventListener('change', event => {
+          state.selected[state.currentIndex] = Number(event.target.value);
+        });
+      });
+
+      document.getElementById('prevQuestion').addEventListener('click', () => {
+        if (state.currentIndex > 0) {
+          state.currentIndex -= 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        }
+      });
+
+      document.getElementById('nextQuestion').addEventListener('click', () => {
+        if (!state.showingFeedback) {
+          const current = state.selected[state.currentIndex];
+          if (current === null || current === undefined) {
+            alert('Selecione uma alternativa antes de responder.');
+            return;
+          }
+
+          const isCorrect = current === question.answer;
+          state.results[state.currentIndex] = isCorrect;
+          state.showingFeedback = true;
+          renderQuestion();
+          return;
+        }
+
+        if (state.currentIndex < quizQuestions.length - 1) {
+          state.currentIndex += 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      });
+    }
+
+    function showResults() {
+      const total = quizQuestions.length;
+      const correct = state.results.filter(Boolean).length;
+      const errors = total - correct;
+      const percent = Math.round((correct / total) * 100);
+      const performance = percent >= 80 ? 'Excelente!' : percent >= 70 ? 'Bom desempenho!' : percent >= 50 ? 'Você está no caminho certo.' : 'Revise os conceitos principais do módulo.';
+
+      scorePanel.classList.add('visible');
+      scorePanel.innerHTML = `
+        <h3>Resultado do quiz</h3>
+        <p>Você acertou <strong>${correct}</strong> de <strong>${total}</strong> questões — <strong>${percent}%</strong>.</p>
+        <p>Erros: <strong>${errors}</strong></p>
+        <p><strong>${performance}</strong></p>
+        <div class="nav-buttons" style="margin-top:16px;">
+          <button class="button secondary" type="button" id="restartQuiz">Reiniciar quiz</button>
+        </div>
+      `;
+
+      const wrongQuestions = quizQuestions.filter((q, index) => state.results[index] === false);
+
+      if (wrongQuestions.length > 0) {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          ${wrongQuestions.map((q, idx) => {
+            const originalIndex = quizQuestions.indexOf(q);
+            const selectedValue = state.selected[originalIndex];
+            const selectedLetter = selectedValue === null ? '—' : getLetter(selectedValue);
+            const correctLetter = getLetter(q.answer);
+            return `
+              <div class="review-item">
+                <p><strong>Questão ${originalIndex + 1}</strong></p>
+                <p><strong>Resposta selecionada:</strong> ${selectedLetter}</p>
+                <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+                <p><strong>Explicação:</strong> ${q.explanation}</p>
+              </div>
+            `;
+          }).join('')}
+        `;
+      } else {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          <p>Parabéns! Você acertou todas as questões. Revise o resumo do módulo para reforçar os principais conceitos.</p>
+        `;
+      }
+
+      quizContainer.innerHTML = '<p>Quiz concluído. Abaixo está sua pontuação e a revisão dos erros.</p>';
+
+      document.getElementById('restartQuiz').addEventListener('click', () => {
+        state.currentIndex = 0;
+        state.selected = Array(quizQuestions.length).fill(null);
+        state.results = Array(quizQuestions.length).fill(null);
+        state.showingFeedback = false;
+        scorePanel.classList.remove('visible');
+        reviewErrors.classList.remove('visible');
+        renderQuestion();
+      });
+    }
+
+    renderQuestion();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sd_theme_pref', newTheme);
+      document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const savedTheme = localStorage.getItem('sd_theme_pref') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  </script>
+</body>
+</html>

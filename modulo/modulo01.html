@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo 1 — Fundamentos de Processos, Comunicação e Concorrência</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success-color: #16a34a;
+      --success-light: #f0fdf4;
+      --warning-color: #d97706;
+      --warning-light: #fffbeb;
+      --danger-color: #dc2626;
+      --danger-light: #fef2f2;
+      --border-color: #e2e8f0;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-card: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary-color: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-light: rgba(96, 165, 250, 0.12);
+      --success-color: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.12);
+      --warning-color: #fbbf24;
+      --warning-light: rgba(251, 191, 36, 0.08);
+      --danger-color: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.12);
+      --border-color: #334155;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    a { color: inherit; }
+
+    .module-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+    }
+
+    .main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      background: var(--primary-light);
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+    }
+
+    .brand-info { min-width: 0; }
+    .brand-info h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+    .brand-info p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 14px 0 12px;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 820px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+    }
+
+    .objective-list,
+    .bullet-list,
+    .simple-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-secondary);
+    }
+
+    .objective-list li,
+    .bullet-list li,
+    .simple-list li {
+      margin-bottom: 8px;
+    }
+
+    .mini-stat {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini-stat .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.3rem;
+      color: var(--primary-color);
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 {
+      margin: 0 0 6px;
+      font-size: clamp(1.6rem, 2vw, 2rem);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .topic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .topic-card h4 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .topic-card p,
+    .topic-card li {
+      color: var(--text-secondary);
+    }
+
+    .highlight {
+      border-left: 4px solid var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .warning {
+      border-left: 4px solid var(--warning-color);
+      background: var(--warning-light);
+    }
+
+    .success-box {
+      border-left: 4px solid var(--success-color);
+      background: var(--success-light);
+    }
+
+    .memory-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .memory-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .memory-block small {
+      display: block;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .state-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--text-primary);
+    }
+
+    .state-node {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .state-arrow {
+      color: var(--primary-color);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .compare-card h4 {
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+
+    .mini-box {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      border: 1px dashed var(--border-color);
+      margin-top: 10px;
+      color: var(--text-secondary);
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--warning-light);
+      border: 1px solid rgba(217, 119, 6, 0.4);
+    }
+
+    .callout strong {
+      color: var(--warning-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .quiz-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .question-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .question-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      color: var(--text-primary);
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .option-label input {
+      margin-top: 4px;
+      accent-color: var(--primary-color);
+    }
+
+    .option-letter {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .answer-result {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .answer-result.visible {
+      display: block;
+    }
+
+    .answer-result.correct {
+      background: var(--success-light);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: var(--text-primary);
+    }
+
+    .answer-result.incorrect {
+      background: var(--danger-light);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: var(--text-primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      color: white;
+      background: var(--primary-color);
+    }
+
+    .button.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .score-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .score-panel.visible {
+      display: block;
+    }
+
+    .score-panel h3 {
+      margin: 0 0 10px;
+    }
+
+    .review-errors {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .review-errors.visible {
+      display: block;
+    }
+
+    .review-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      margin-top: 14px;
+    }
+
+    .review-item p {
+      margin: 8px 0;
+      color: var(--text-secondary);
+    }
+
+    .keyword {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .mini-stat {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quiz-box,
+      .card,
+      .hero {
+        padding: 16px;
+      }
+
+      .state-flow {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="back-link" href="../index.html">← Voltar ao curso</a>
+        <div class="brand-info">
+          <h1>Módulo 1</h1>
+          <p>Fundamentos de Processos, Comunicação e Concorrência</p>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo escuro">🌙</button>
+    </div>
+  </header>
+
+  <main class="module-wrap">
+    <section class="hero">
+      <span class="eyebrow">Sistemas Distribuídos</span>
+      <h2>Fundamentos de Processos, Comunicação e Concorrência</h2>
+      <p>
+        Este módulo apresenta os conceitos básicos de processo, estados, filas, escalonamento,
+        comunicação entre processos e os principais problemas de concorrência. O objetivo é construir a base
+        para compreender como sistemas operacionais e sistemas distribuídos coordenam execução,
+        compartilhamento de recursos e sincronização.
+      </p>
+    </section>
+
+    <div class="grid-two">
+      <section class="card">
+        <h3>Objetivos de aprendizagem</h3>
+        <ul class="objective-list">
+          <li>Entender o que é um processo e como ele se diferencia de um programa.</li>
+          <li>Reconhecer os estados de um processo e suas transições.</li>
+          <li>Compreender o papel do PCB e da troca de contexto.</li>
+          <li>Identificar filas de processos e a atuação dos escalonadores.</li>
+          <li>Comparar IPC por passagem de mensagens e memória compartilhada.</li>
+          <li>Entender race condition, região crítica e mutex.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Resumo rápido</h3>
+        <div class="mini-stat">
+          <div class="stat-box"><strong>PCB</strong><span>Controle do processo</span></div>
+          <div class="stat-box"><strong>Context Switch</strong><span>Troca entre processos</span></div>
+          <div class="stat-box"><strong>IPC</strong><span>Comunicação entre processos</span></div>
+          <div class="stat-box"><strong>Mutex</strong><span>Exclusão mútua</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h3>1. O que é um processo?</h3>
+        <p>Programa em execução e não apenas o código armazenado em disco.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          Um <strong>processo</strong> é um programa em execução. Enquanto um programa é uma sequência de instruções
+          armazenada em disco, o processo é a entidade ativa que o sistema operacional gerencia na memória e na CPU.
+        </p>
+        <p>
+          Durante sua execução, um processo possui informações como <strong>contador de programa</strong>,
+          <strong>pilha (Stack)</strong>, <strong>seção de dados (Data)</strong>, <strong>código/texto (Text)</strong>
+          e recursos associados, como arquivos abertos, memória e sincronização.
+        </p>
+
+        <div class="memory-layout">
+          <div class="memory-block">Text <small>Código do programa</small></div>
+          <div class="memory-block">Data <small>Variáveis e dados</small></div>
+          <div class="memory-block">Heap <small>Memória dinâmica</small></div>
+          <div class="memory-block">Stack <small>Pilha de execução</small></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplo simples</h4>
+        <p>
+          Um aplicativo de impressão de documentos pode estar em execução como um processo. Ele usa a CPU para preparar
+          a impressão, troca dados com arquivos e pode aguardar E/S, como a ação de gravar em disco ou enviar uma página para a impressora.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>2. Estados do processo</h3>
+        <p>O fluxo da execução do processo em um sistema operacional.</p>
+      </div>
+
+      <div class="card">
+        <div class="state-flow">
+          <div class="state-node">Novo</div>
+          <div class="state-arrow">→</div>
+          <div class="state-node">Pronto</div>
+          <div class="state-arrow">→</div>
+          <div class="state-node">Executando</div>
+          <div class="state-arrow">→</div>
+          <div class="state-node">Esperando</div>
+          <div class="state-arrow">→</div>
+          <div class="state-node">Pronto</div>
+          <div class="state-arrow">→</div>
+          <div class="state-node">Terminado</div>
+        </div>
+
+        <ul class="simple-list" style="margin-top:16px;">
+          <li><strong>Novo:</strong> o processo está sendo criado.</li>
+          <li><strong>Pronto:</strong> espera para receber o processador.</li>
+          <li><strong>Executando:</strong> as instruções estão sendo executadas.</li>
+          <li><strong>Esperando:</strong> aguarda um evento, geralmente operação de E/S.</li>
+          <li><strong>Terminado:</strong> finalizou a execução.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>3. PCB: Process Control Block</h3>
+        <p>Estrutura central para controlar o processo.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          O <strong>Process Control Block (PCB)</strong> é a estrutura de dados usada pelo sistema operacional para armazenar
+          as informações necessárias ao controle e à retomada da execução de um processo. Ele guarda elementos como PID,
+          estado atual, contador de instruções, registradores, informações de memória e status de E/S.
+        </p>
+        <p>
+          O PCB está diretamente relacionado à <strong>troca de contexto</strong>, porque é nele que o SO salva o estado do processo atual e posteriormente carrega o estado do próximo processo a executar.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>4. Troca de contexto</h3>
+        <p>Quando a CPU passa a executar outro processo.</p>
+      </div>
+
+      <div class="card warning">
+        <p>
+          A <strong>Context Switch</strong> ocorre quando a CPU deixa de executar um processo e passa a executar outro.
+          Nesse momento, o sistema salva o estado do processo atual e carrega o estado do próximo processo.
+        </p>
+        <ol class="simple-list">
+          <li>O estado do processo atual é salvo.</li>
+          <li>O estado do próximo processo é carregado.</li>
+          <li>A CPU passa a executar o novo processo.</li>
+        </ol>
+        <p>
+          A troca de contexto gera <strong>overhead</strong>. Durante esse intervalo, a CPU não está realizando trabalho útil
+          do processo do usuário; ela está realizando a troca de estado entre processos.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>5. Filas de processos</h3>
+        <p>Organização dos processos no sistema operacional.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fila</th>
+              <th>Função</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Job Queue</strong></td>
+              <td>Conjunto de todos os processos que existem no sistema.</td>
+            </tr>
+            <tr>
+              <td><strong>Ready Queue</strong></td>
+              <td>Processos na memória principal, prontos para execução e aguardando a CPU.</td>
+            </tr>
+            <tr>
+              <td><strong>Device Queue</strong></td>
+              <td>Processos esperando por operações de E/S, como leitura de disco ou impressão.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>6. Escalonadores</h3>
+        <p>Quem decide quando cada processo entra em execução.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Função</th>
+              <th>Frequência</th>
+              <th>Relação com memória</th>
+              <th>Relação com CPU</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Long-term Scheduler</strong></td>
+              <td>Seleciona quais processos entram na memória e na fila de pronto.</td>
+              <td>Menor frequência; ordem de segundos/minutos.</td>
+              <td>Controla o grau de multiprogramação e decide quais processos ficam na memória.</td>
+              <td>Não escolhe diretamente o processo que executa no momento; decide quais processos podem competir pela CPU.</td>
+            </tr>
+            <tr>
+              <td><strong>Short-term Scheduler</strong></td>
+              <td>Escolhe qual processo da fila de pronto receberá a CPU.</td>
+              <td>Alta frequência; ordem de milissegundos.</td>
+              <td>Trabalha com processos já na memória.</td>
+              <td>Seleciona o processo que usa a CPU em cada instante.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <strong>CUIDADO NA PROVA</strong>
+        <div><strong>Curto prazo = quem usa a CPU.</strong></div>
+        <div><strong>Longo prazo = quem entra na memória/fila de pronto.</strong></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>7. Processos orientados a CPU e orientados a E/S</h3>
+        <p>Tipos de processo segundo o padrão de uso dos recursos.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>CPU-bound</h4>
+          <p>Processo que realiza cálculos intensivos e passa grande parte do tempo executando instruções.</p>
+          <div class="mini-box">Exemplo: processamento matemático, compressão de arquivos e cálculos científicos.</div>
+        </div>
+        <div class="compare-card">
+          <h4>I/O-bound</h4>
+          <p>Processo que passa muito tempo esperando operações de entrada e saída, como leitura de disco ou rede.</p>
+          <div class="mini-box">Exemplo: leitura de arquivos, impressão e acesso a redes.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>8. IPC: Comunicação entre Processos</h3>
+        <p>Processos precisam trocar dados e coordenar ações.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Passagem de mensagens</h4>
+          <p>Os processos usam primitivas como <strong>send(destino, mensagem)</strong> e <strong>receive(origem, mensagem)</strong>.</p>
+          <div class="mini-box">A comunicação é explícita e estruturada.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Memória compartilhada</h4>
+          <p>Dois ou mais processos acessam uma área comum de memória para trocar informações.</p>
+          <div class="mini-box">É rápida, porém exige sincronização rigorosa.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Comparação rápida</h4>
+        <ul class="simple-list">
+          <li><strong>Passagem de mensagens:</strong> comunicação explícita, mais simples de sincronizar em sistemas distribuídos.</li>
+          <li><strong>Memória compartilhada:</strong> alta velocidade local, mas exige cuidado para evitar inconsistências.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>9. Problema do Produtor-Consumidor</h3>
+        <p>Coordenar produção e consumo de itens em um buffer.</p>
+      </div>
+
+      <div class="card success-box">
+        <p>Produtor → Buffer → Consumidor</p>
+        <ul class="simple-list">
+          <li><strong>Produtor:</strong> gera dados ou itens.</li>
+          <li><strong>Buffer:</strong> área temporária de armazenamento.</li>
+          <li><strong>Consumidor:</strong> lê e processa os itens.</li>
+        </ul>
+        <p>
+          O problema aparece quando o buffer é limitado: o produtor não pode encher o buffer indefinidamente e o consumidor não pode consumir sem itens. Quando o buffer é ilimitado, a coordenação é mais simples, mas ainda exige atenção ao uso dos recursos.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>10. Race Condition</h3>
+        <p>Resultado depende da ordem de execução.</p>
+      </div>
+
+      <div class="card">
+        <p>
+          Uma <strong>Race Condition</strong> acontece quando dois ou mais processos acessam e modificam um dado compartilhado
+          ao mesmo tempo e o resultado final depende da ordem em que as instruções são executadas.
+        </p>
+        <p>
+          Isso torna o problema difícil de reproduzir e depurar, porque o erro pode aparecer em algumas execuções e não em outras, dependendo do tempo e da ordem de disparo dos processos.
+        </p>
+        <div class="mini-box">Exemplo: dois processos incrementam a mesma variável compartilhada ao mesmo tempo; o valor final pode ficar incorreto dependendo da ordem de execução.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>11. Região Crítica</h3>
+        <p>Trecho do código em que há acesso a recurso compartilhado.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          A <strong>Região Crítica</strong> é a parte do código em que um recurso compartilhado é lido ou escrito por mais de um processo.
+          Como o acesso concorrente pode causar inconsistência, esse trecho precisa de sincronização.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>12. Mutex e exclusão mútua</h3>
+        <p>Proteção do acesso à região crítica.</p>
+      </div>
+
+      <div class="card success-box">
+        <p>
+          O <strong>Mutex</strong> é um mecanismo de <strong>exclusão mútua</strong>. Seu objetivo é impedir que múltiplos processos
+          entrem simultaneamente em uma região crítica protegida.
+        </p>
+        <ul class="simple-list">
+          <li>Processo A entra na região crítica.</li>
+          <li>Processo B tenta entrar, mas precisa esperar.</li>
+          <li>Processo A sai da região crítica.</li>
+          <li>Processo B pode entrar.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>13. Comparações importantes</h3>
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Curto prazo × Longo prazo</h4>
+          <p><strong>Curto prazo:</strong> escolhe quem usa a CPU.</p>
+          <p><strong>Longo prazo:</strong> decide quem entra na memória/fila de pronto.</p>
+        </div>
+        <div class="compare-card">
+          <h4>Passagem de mensagens × Memória compartilhada</h4>
+          <p><strong>Passagem de mensagens:</strong> comunicação explícita.</p>
+          <p><strong>Memória compartilhada:</strong> acesso direto a uma área comum.</p>
+        </div>
+        <div class="compare-card">
+          <h4>CPU-bound × I/O-bound</h4>
+          <p><strong>CPU-bound:</strong> processamento intenso.</p>
+          <p><strong>I/O-bound:</strong> muito tempo esperando E/S.</p>
+        </div>
+        <div class="compare-card">
+          <h4>Região crítica × Mutex</h4>
+          <p><strong>Região crítica:</strong> trecho sensível do código.</p>
+          <p><strong>Mutex:</strong> mecanismo que protege esse trecho.</p>
+        </div>
+        <div class="compare-card">
+          <h4>Job Queue × Ready Queue × Device Queue</h4>
+          <p><strong>Job Queue:</strong> todos os processos.</p>
+          <p><strong>Ready Queue:</strong> prontos para executar.</p>
+          <p><strong>Device Queue:</strong> aguardando E/S.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>RESUMO — O QUE VOCÊ PRECISA SABER</h3>
+      </div>
+      <div class="card">
+        <div class="keywords" style="margin-bottom:12px;">
+          <span class="keyword">Processo = programa em execução</span>
+          <span class="keyword">PCB = estrutura de controle do processo</span>
+          <span class="keyword">Context Switch = troca entre processos</span>
+          <span class="keyword">Context Switch gera overhead</span>
+          <span class="keyword">Ready Queue = processos prontos</span>
+          <span class="keyword">Device Queue = processos esperando E/S</span>
+          <span class="keyword">Longo prazo = controla entrada e multiprogramação</span>
+          <span class="keyword">Curto prazo = seleciona quem usa a CPU</span>
+          <span class="keyword">IPC = comunicação entre processos</span>
+          <span class="keyword">Race Condition = resultado depende da ordem de execução</span>
+          <span class="keyword">Região crítica = trecho que acessa recurso compartilhado</span>
+          <span class="keyword">Mutex = exclusão mútua</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz-box" id="quizSection">
+      <div class="section-head">
+        <h3>Questões objetivas</h3>
+        <p>Responda as perguntas e revise os erros ao final.</p>
+      </div>
+
+      <div id="quizContainer"></div>
+      <div id="scorePanel" class="score-panel"></div>
+      <div id="reviewErrors" class="review-errors"></div>
+    </section>
+  </main>
+
+  <script>
+    const quizQuestions = [
+      {
+        question: 'Qual alternativa melhor define um processo?',
+        options: [
+          'Um passo de execução do programa armazenado em disco sem memória ativa.',
+          'Um programa em execução com informações de execução, memória e recursos associados.',
+          'Uma fila de processos prontos esperando pela CPU.',
+          'Um mecanismo de sincronização usado para bloquear a região crítica.',
+          'A área de memória usada apenas para o código do programa.'
+        ],
+        answer: 1,
+        explanation: 'Processo é um programa em execução, não apenas o código em disco. Ele possui contexto, memória e recursos ativos.'
+      },
+      {
+        question: 'Qual item faz parte do estado de um processo?',
+        options: [
+          'Job Queue',
+          'Pronto',
+          'Relay',
+          'Scheduler',
+          'Context Switch'
+        ],
+        answer: 1,
+        explanation: 'O estado do processo pode ser Novo, Pronto, Executando, Esperando ou Terminado.'
+      },
+      {
+        question: 'O PCB é usado para:',
+        options: [
+          'Executar diretamente o código do usuário na CPU.',
+          'Armazenar informações necessárias para controlar e retomar a execução do processo.',
+          'Substituir a fila de prontos.',
+          'Escolher o algoritmo de escalonamento do disco.',
+          'Criar a memória compartilhada entre processos.'
+        ],
+        answer: 1,
+        explanation: 'O Process Control Block mantém informações do processo, como estado, registradores e dados de controle, apoiando a troca de contexto.'
+      },
+      {
+        question: 'O que ocorre durante a troca de contexto?',
+        options: [
+          'A CPU continua executando o mesmo processo sem alteração.',
+          'O sistema salva o estado atual e carrega o do próximo processo.',
+          'O processo sai da memória e entra no disco rígido.',
+          'O escalonador elimina a fila de dispositivos.',
+          'A memória compartilhada é automaticamente liberada.'
+        ],
+        answer: 1,
+        explanation: 'A troca de contexto salva o contexto do processo antigo e restaura o do novo processo para continuar a execução.'
+      },
+      {
+        question: 'Por que a troca de contexto gera overhead?',
+        options: [
+          'Porque a CPU deixa de executar instruções úteis do usuário para salvar e restaurar o contexto.',
+          'Porque ela aumenta a velocidade do escalonador.',
+          'Porque o processo passa do estado Novo para Terminado.',
+          'Porque a memória compartilhada é desalocada.',
+          'Porque o PCB deixa de existir.'
+        ],
+        answer: 0,
+        explanation: 'Durante a troca de contexto, a CPU não realiza trabalho útil do processo do usuário; realiza a manutenção do contexto.'
+      },
+      {
+        question: 'Qual fila contém processos na memória principal, prontos para receber a CPU?',
+        options: [
+          'Job Queue',
+          'Ready Queue',
+          'Device Queue',
+          'Stack',
+          'Heap'
+        ],
+        answer: 1,
+        explanation: 'A Ready Queue reúne os processos que já estão na memória principal e aguardam para execução.'
+      },
+      {
+        question: 'Qual alternativa diferencia corretamente o escalonador de longo prazo do de curto prazo?',
+        options: [
+          'Longo prazo seleciona o processo da fila de pronto; curto prazo decide quem entra na memória.',
+          'Longo prazo decide quais processos entram na memória/fila de pronto; curto prazo seleciona o processo que usa a CPU.',
+          'Longo prazo é usado somente em I/O-bound; curto prazo é usado somente em CPU-bound.',
+          'Longo prazo é responsável por mutex; curto prazo por regiões críticas.',
+          'As duas funções são iguais e atuam na mesma frequência.'
+        ],
+        answer: 1,
+        explanation: 'O escalonador de longo prazo controla a admissão de processos na memória e o grau de multiprogramação; o curto prazo decide quem executa na CPU.'
+      },
+      {
+        question: 'Um processo orientado a CPU normalmente:',
+        options: [
+          'Passa muito tempo esperando por E/S.',
+          'Realiza muitos cálculos e fica grande parte do tempo executando.',
+          'Nunca usa a memória principal.',
+          'Não participa da fila de prontos.',
+          'Ignora o ambiente de rede.'
+        ],
+        answer: 1,
+        explanation: 'Processos CPU-bound fazem cálculos intensivos e consumem boa parte do tempo da CPU.'
+      },
+      {
+        question: 'Qual alternativa descreve melhor a comunicação por passagem de mensagens?',
+        options: [
+          'Dois processos compartilham diretamente o mesmo bloco de memória.',
+          'Um processo usa send(destino, mensagem) e outro recebe com receive(origem, mensagem).',
+          'A CPU escolhe qual processo entra na memória.',
+          'O escalonador retira o processo da fila de pronto.',
+          'O PCB salva os dados da memória compartilhada.'
+        ],
+        answer: 1,
+        explanation: 'Na passagem de mensagens, a comunicação é explícita por meio de send e receive.'
+      },
+      {
+        question: 'O que é uma condição de corrida (Race Condition)?',
+        options: [
+          'Quando um processo é bloqueado para sempre em uma fila de dispositivos.',
+          'Quando dois ou mais processos acessam e modificam dados compartilhados e o resultado depende da ordem de execução.',
+          'Quando o short-term scheduler escolhe o processo errado.',
+          'Quando o PCB não armazena o estado do processo.',
+          'Quando o processo não entra na memória principal.'
+        ],
+        answer: 1,
+        explanation: 'Race condition ocorre quando acessos concorrentes a um dado compartilhado levam a resultados diferentes conforme a ordem de execução.'
+      },
+      {
+        question: 'A região crítica é:',
+        options: [
+          'A parte do código em que o processo fica no estado Esperando.',
+          'A zona em que o processo entra no Job Queue.',
+          'O trecho do código que acessa um recurso compartilhado e precisa de sincronização.',
+          'A fila de processos prontos para receber a CPU.',
+          'A área de memória usada apenas para a pilha.'
+        ],
+        answer: 2,
+        explanation: 'A região crítica é o trecho de código no qual ocorre acesso ao recurso compartilhado e onde há risco de inconsistência.'
+      },
+      {
+        question: 'Qual é a função principal do mutex?',
+        options: [
+          'Determinar a ordem dos processos na fila de prontos.',
+          'Tomar decisões de longo prazo sobre quem entra na memória.',
+          'Garantir exclusão mútua e impedir que múltiplos processos entrem ao mesmo tempo na região crítica.',
+          'Definir o tempo de espera em fila de dispositivos.',
+          'Exclusivamente criar um processo novo.'
+        ],
+        answer: 2,
+        explanation: 'O mutex protege a região crítica, permitindo que apenas um processo execute esse trecho por vez e evitando race condition.'
+      }
+    ];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const scorePanel = document.getElementById('scorePanel');
+    const reviewErrors = document.getElementById('reviewErrors');
+
+    const state = {
+      currentIndex: 0,
+      selected: Array(quizQuestions.length).fill(null),
+      answered: Array(quizQuestions.length).fill(false),
+      correctCount: 0,
+      incorrectIndices: []
+    };
+
+    function renderQuestion() {
+      const question = quizQuestions[state.currentIndex];
+      const qNumber = state.currentIndex + 1;
+      const selected = state.selected[state.currentIndex];
+
+      let optionsHtml = question.options.map((option, index) => {
+        const isChecked = selected === index ? 'checked' : '';
+        return `
+          <label class="option-label">
+            <input type="radio" name="q${state.currentIndex}" value="${index}" ${isChecked} />
+            <span class="option-letter">${String.fromCharCode(65 + index)}</span>
+            <span>${option}</span>
+          </label>
+        `;
+      }).join('');
+
+      quizContainer.innerHTML = `
+        <div class="question-card">
+          <h4>Pergunta ${qNumber} de ${quizQuestions.length}</h4>
+          <p>${question.question}</p>
+          <div class="options">${optionsHtml}</div>
+          <div class="nav-buttons">
+            <button class="button secondary" type="button" id="prevQuestion" ${state.currentIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button class="button" type="button" id="nextQuestion">${state.currentIndex === quizQuestions.length - 1 ? 'Finalizar quiz' : 'Próxima pergunta'}</button>
+          </div>
+        </div>
+      `;
+
+      const optionInputs = quizContainer.querySelectorAll('input[type="radio"]');
+      optionInputs.forEach(input => {
+        input.addEventListener('change', event => {
+          state.selected[state.currentIndex] = Number(event.target.value);
+        });
+      });
+
+      document.getElementById('prevQuestion').addEventListener('click', () => {
+        if (state.currentIndex > 0) {
+          state.currentIndex -= 1;
+          renderQuestion();
+        }
+      });
+
+      document.getElementById('nextQuestion').addEventListener('click', () => {
+        const current = state.selected[state.currentIndex];
+        if (current === null || current === undefined) {
+          alert('Selecione uma alternativa antes de continuar.');
+          return;
+        }
+
+        const isCorrect = current === quizQuestions[state.currentIndex].answer;
+        state.answered[state.currentIndex] = true;
+
+        if (isCorrect) {
+          state.correctCount += 1;
+        } else {
+          state.incorrectIndices.push(state.currentIndex);
+        }
+
+        if (state.currentIndex < quizQuestions.length - 1) {
+          state.currentIndex += 1;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      });
+    }
+
+    function showResults() {
+      const total = quizQuestions.length;
+      const correct = state.correctCount;
+      const errors = total - correct;
+      const percent = Math.round((correct / total) * 100);
+      const performance = percent >= 80 ? 'Excelente!' : percent >= 70 ? 'Bom desempenho!' : percent >= 50 ? 'Você está no caminho certo.' : 'Revise os conceitos principais do módulo.';
+
+      scorePanel.classList.add('visible');
+      scorePanel.innerHTML = `
+        <h3>Resultado do quiz</h3>
+        <p>Você acertou <strong>${correct}</strong> de <strong>${total}</strong> questões — <strong>${percent}%</strong>.</p>
+        <p>Erros: <strong>${errors}</strong></p>
+        <p><strong>${performance}</strong></p>
+      `;
+
+      const wrongQuestions = quizQuestions.filter((q, index) => {
+        return state.selected[index] !== q.answer;
+      });
+
+      if (wrongQuestions.length > 0) {
+        reviewErrors.classList.add('visible');
+        const reviewHtml = wrongQuestions.map((q, idx) => {
+          const originalIndex = quizQuestions.indexOf(q);
+          const userChoice = state.selected[originalIndex];
+          const userLetter = userChoice === null || userChoice === undefined ? '—' : String.fromCharCode(65 + userChoice);
+          const correctLetter = String.fromCharCode(65 + q.answer);
+          return `
+            <div class="review-item">
+              <p><strong>Questão ${originalIndex + 1}</strong></p>
+              <p><strong>Resposta escolhida:</strong> ${userLetter}</p>
+              <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+              <p><strong>Explicação:</strong> ${q.explanation}</p>
+            </div>
+          `;
+        }).join('');
+
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          ${reviewHtml}
+        `;
+      } else {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          <p>Parabéns! Você acertou todas as questões. Revise o resumo do módulo para reforçar os principais conceitos.</p>
+        `;
+      }
+
+      quizContainer.innerHTML = '<p>Quiz concluído. Abaixo está sua pontuação e a revisão dos erros.</p>';
+    }
+
+    renderQuestion();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sd_theme_pref', newTheme);
+      document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const savedTheme = localStorage.getItem('sd_theme_pref') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  </script>
+</body>
+</html>

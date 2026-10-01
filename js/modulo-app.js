@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicialização
     initModuleTheme();
     renderModuleHeaderAndContent();
+    if (typeof window.renderModuleQuiz === 'function') {
+        window.renderModuleQuiz(moduleId);
+    }
     setupScrollProgressTracker();
 
     function initModuleTheme() {

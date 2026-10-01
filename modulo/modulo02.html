@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo 2 — Arquiteturas de Sistemas Distribuídos, Threads e RPC</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success-color: #16a34a;
+      --success-light: #f0fdf4;
+      --warning-color: #d97706;
+      --warning-light: #fffbeb;
+      --danger-color: #dc2626;
+      --danger-light: #fef2f2;
+      --border-color: #e2e8f0;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-card: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary-color: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-light: rgba(96, 165, 250, 0.12);
+      --success-color: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.12);
+      --warning-color: #fbbf24;
+      --warning-light: rgba(251, 191, 36, 0.08);
+      --danger-color: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.12);
+      --border-color: #334155;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    a { color: inherit; }
+
+    .module-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+    }
+
+    .main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      background: var(--primary-light);
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+    }
+
+    .brand-info { min-width: 0; }
+    .brand-info h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+    .brand-info p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 14px 0 12px;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 820px;
+    }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+    }
+
+    .objective-list,
+    .bullet-list,
+    .simple-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-secondary);
+    }
+
+    .objective-list li,
+    .bullet-list li,
+    .simple-list li {
+      margin-bottom: 8px;
+    }
+
+    .mini-stat {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .mini-stat .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.3rem;
+      color: var(--primary-color);
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-head {
+      margin-bottom: 14px;
+    }
+
+    .section-head h3 {
+      margin: 0 0 6px;
+      font-size: clamp(1.6rem, 2vw, 2rem);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .topic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .topic-card h4 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .topic-card p,
+    .topic-card li {
+      color: var(--text-secondary);
+    }
+
+    .highlight {
+      border-left: 4px solid var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .warning {
+      border-left: 4px solid var(--warning-color);
+      background: var(--warning-light);
+    }
+
+    .success-box {
+      border-left: 4px solid var(--success-color);
+      background: var(--success-light);
+    }
+
+    .memory-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .memory-block {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .memory-block small {
+      display: block;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .concept-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--text-primary);
+    }
+
+    .concept-node {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .concept-arrow {
+      color: var(--primary-color);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      vertical-align: top;
+      color: var(--text-secondary);
+    }
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .compare-card h4 {
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+
+    .mini-box {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      border: 1px dashed var(--border-color);
+      margin-top: 10px;
+      color: var(--text-secondary);
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--warning-light);
+      border: 1px solid rgba(217, 119, 6, 0.4);
+    }
+
+    .callout strong {
+      color: var(--warning-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .quiz-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .question-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .question-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      color: var(--text-primary);
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-color);
+      background: var(--primary-light);
+    }
+
+    .option-label input {
+      margin-top: 4px;
+      accent-color: var(--primary-color);
+    }
+
+    .option-letter {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .answer-result {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .answer-result.visible {
+      display: block;
+    }
+
+    .answer-result.correct {
+      background: var(--success-light);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: var(--text-primary);
+    }
+
+    .answer-result.incorrect {
+      background: var(--danger-light);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: var(--text-primary);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      color: white;
+      background: var(--primary-color);
+    }
+
+    .button.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .score-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .score-panel.visible {
+      display: block;
+    }
+
+    .score-panel h3 {
+      margin: 0 0 10px;
+    }
+
+    .review-errors {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .review-errors.visible {
+      display: block;
+    }
+
+    .review-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      margin-top: 14px;
+    }
+
+    .review-item p {
+      margin: 8px 0;
+      color: var(--text-secondary);
+    }
+
+    .keyword {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .mini-stat {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quiz-box,
+      .card,
+      .hero {
+        padding: 16px;
+      }
+
+      .concept-flow {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="back-link" href="../index.html">← Voltar ao curso</a>
+        <div class="brand-info">
+          <h1>Módulo 2</h1>
+          <p>Arquiteturas de Sistemas Distribuídos, Threads e RPC</p>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo escuro">🌙</button>
+    </div>
+  </header>
+
+  <main class="module-wrap">
+    <section class="hero">
+      <span class="eyebrow">Sistemas Distribuídos</span>
+      <h2>Arquiteturas de Sistemas Distribuídos, Threads e RPC</h2>
+      <p>
+        Este módulo aborda a base arquitetural dos sistemas distribuídos: a criação e o uso de threads,
+        a organização em cliente-servidor e peer-to-peer, a camada de middleware, a comunicação por sockets
+        e o funcionamento do RPC. Também exploramos a definição de interfaces, o empacotamento de dados,
+        a semântica de execução e a importância da idempotência em chamadas remotas.
+      </p>
+    </section>
+
+    <div class="grid-two">
+      <section class="card">
+        <h3>Objetivos de aprendizagem</h3>
+        <ul class="objective-list">
+          <li>Compreender o conceito de thread.</li>
+          <li>Diferenciar threads de usuário e threads de kernel.</li>
+          <li>Reconhecer arquiteturas Cliente-Servidor e Peer-to-Peer.</li>
+          <li>Entender a função do middleware.</li>
+          <li>Compreender sockets como mecanismo de comunicação.</li>
+          <li>Explicar o funcionamento básico do RPC.</li>
+          <li>Identificar as funções dos Stubs e Skeletons.</li>
+          <li>Entender marshalling e unmarshalling.</li>
+          <li>Conhecer a finalidade da IDL.</li>
+          <li>Diferenciar semânticas de execução RPC e a relação com idempotência.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Resumo rápido</h3>
+        <div class="mini-stat">
+          <div class="stat-box"><strong>Thread</strong><span>Linha leve de execução</span></div>
+          <div class="stat-box"><strong>RPC</strong><span>Chamada remota</span></div>
+          <div class="stat-box"><strong>Middleware</strong><span>Camada de abstração</span></div>
+          <div class="stat-box"><strong>IDL</strong><span>Contrato entre cliente e servidor</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h3>1. Threads</h3>
+        <p>Uma thread é a unidade básica de utilização da CPU dentro de um processo.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          Uma <strong>thread</strong> é uma unidade básica de uso da CPU, composta por contador de programa,
+          conjunto de registradores e espaço de pilha. Ela executa dentro de um processo e compartilha código,
+          dados, heap e recursos do sistema operacional com outras threads do mesmo processo.
+        </p>
+        <p>
+          Os elementos que cada thread possui de forma própria são: <strong>contador de programa</strong>,
+          <strong>registradores</strong> e <strong>stack/pilha própria</strong>.
+        </p>
+
+        <div class="memory-layout">
+          <div class="memory-block">Código <small>Compartilhado</small></div>
+          <div class="memory-block">Dados <small>Compartilhado</small></div>
+          <div class="memory-block">Heap <small>Compartilhado</small></div>
+          <div class="memory-block">Stack <small>Próprio de cada thread</small></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <h4>Exemplo didático</h4>
+        <p>
+          Um servidor web pode criar uma nova thread para atender cada requisição recebida. Assim, várias solicitações
+          podem ser processadas simultaneamente sem que cada uma precise ser um processo separado.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>2. Threads de usuário e threads de kernel</h3>
+        <p>Diferentes níveis de suporte para a execução concorrente.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Threads de usuário</h4>
+          <p>São threads gerenciadas pelo espaço do usuário, sem depender diretamente do núcleo do sistema operacional.</p>
+          <div class="mini-box">São mais leves, mas dependem da implementação da biblioteca ou da aplicação.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Threads de kernel</h4>
+          <p>São threads conhecidas e gerenciadas pelo kernel do sistema operacional.</p>
+          <div class="mini-box">Permitem maior integração com o escalonamento do sistema operacional.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>3. Arquiteturas de sistemas distribuídos</h3>
+        <p>Organização dos papéis e da interação entre componentes.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Cliente-Servidor</h4>
+          <p>Divide claramente os papéis entre cliente e servidor. O cliente faz requisições e o servidor fornece serviços.</p>
+          <div class="mini-box">Estrutura comum em aplicações distribuídas e sistemas web.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Peer-to-Peer</h4>
+          <p>Componentes colaboram diretamente entre si, sem a necessidade de um papel único de servidor central.</p>
+          <div class="mini-box">Cada nó pode receber e fornecer serviços.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>4. Middleware</h3>
+        <p>Uma camada de abstração sobre rede e sistema operacional.</p>
+      </div>
+
+      <div class="card warning">
+        <p>
+          O <strong>middleware</strong> fornece uma camada de abstração entre a aplicação e os mecanismos de rede e sistema operacional.
+          Isso facilita o desenvolvimento, ocultando detalhes de comunicação e de infraestrutura.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>5. Sockets</h3>
+        <p>Abstração para comunicação via rede TCP/UDP.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          Os <strong>sockets</strong> são usados para permitir comunicação por rede, sendo uma abstração para comunicação TCP/UDP.
+          Eles permitem a troca de dados entre processos em diferentes máquinas ou mesmo no mesmo sistema.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>6. RPC — Remote Procedure Call</h3>
+        <p>Chamada de procedimento remoto como se fosse local.</p>
+      </div>
+
+      <div class="card success-box">
+        <p>
+          O mecanismo de <strong>RPC</strong> permite que um programa chame um procedimento ou função executado em outro espaço
+          de endereçamento, geralmente em outro computador da rede, sem precisar programar explicitamente todos os detalhes da comunicação.
+        </p>
+        <p>
+          O objetivo é fazer com que a chamada remota pareça uma chamada local para o programador. Por exemplo,
+          <strong>calcularSaldo(contaId)</strong> pode executar em um servidor remoto.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>7. Client Stub, Server Stub / Skeleton e RPC</h3>
+        <p>Componentes essenciais para esconder a comunicação de rede.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Client Stub</h4>
+          <p>Representa o procedimento remoto no cliente. Recebe a chamada, realiza o marshalling dos parâmetros, envia os dados pela rede e recebe a resposta.</p>
+        </div>
+        <div class="compare-card">
+          <h4>Server Stub / Skeleton</h4>
+          <p>Recebe a requisição remota, executa o unmarshalling dos dados e entrega a chamada ao procedimento correto no servidor.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>8. Marshalling e unmarshalling</h3>
+        <p>Empacotamento e desempacotamento dos dados para a transmissão.</p>
+      </div>
+
+      <div class="card">
+        <p>
+          O <strong>Marshalling</strong> é o processo de empacotar e converter parâmetros e argumentos em um formato adequado para transmissão.
+          O <strong>Unmarshalling</strong> faz a operação inversa, transformando os dados recebidos em uma representação utilizável.
+        </p>
+        <p>Representações comuns incluem XDR e JSON.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>9. IDL — Interface Definition Language</h3>
+        <p>Contrato entre cliente e servidor.</p>
+      </div>
+
+      <div class="card highlight">
+        <p>
+          A <strong>IDL</strong> é usada para definir interfaces remotas de forma independente da linguagem de programação.
+          Ela pode definir funções, parâmetros e tipos de dados e funciona como um contrato entre cliente e servidor.
+        </p>
+        <p>
+          Exemplos mencionados incluem arquivos .idl e gRPC .proto. A IDL permite gerar componentes necessários para cliente e servidor
+          mesmo quando usam linguagens diferentes.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>10. Semântica de execução em RPC</h3>
+        <p>Como a rede e as retransmissões afetam a execução.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>At-least-once</h4>
+          <p>Uma operação pode ser executada mais de uma vez, porque a chamada pode ser retransmitida ou duplicada antes da confirmação.</p>
+          <div class="mini-box">Pode resultar em múltiplas execuções.</div>
+        </div>
+        <div class="compare-card">
+          <h4>At-most-once</h4>
+          <p>Procura garantir que o procedimento remoto seja executado no máximo uma vez, mesmo diante de falhas ou retransmissões.</p>
+          <div class="mini-box">É a semântica importante para evitar duplicidade.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Exactly-once</h4>
+          <p>O ideal seria executar exatamente uma vez, mas depende da implementação e das condições de falha.</p>
+          <div class="mini-box">É um objetivo desejado, porém mais difícil de garantir.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>11. Idempotência</h3>
+        <p>Executar a operação uma ou várias vezes produz o mesmo resultado final.</p>
+      </div>
+
+      <div class="card success-box">
+        <p>
+          Uma operação é <strong>idempotente</strong> quando executá-la uma ou várias vezes produz o mesmo resultado final.
+          Esse conceito é muito importante em sistemas distribuídos, especialmente quando há retransmissões de mensagens.
+        </p>
+        <ul class="simple-list">
+          <li><strong>Idempotente:</strong> "definir saldo para R$100".</li>
+          <li><strong>Não idempotente:</strong> "subtrair R$100 do saldo".</li>
+        </ul>
+        <p>
+          Em operações financeiras, a idempotência é crucial para evitar efeitos colaterais indevidos em caso de retransmissão.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>Resumo — o que você precisa saber</h3>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px;">
+          <span class="keyword">Thread = unidade de uso da CPU</span>
+          <span class="keyword">Threads do mesmo processo compartilham recursos</span>
+          <span class="keyword">Cliente-Servidor = papéis separados</span>
+          <span class="keyword">Peer-to-Peer = comunicação direta entre nós</span>
+          <span class="keyword">Middleware = abstração sobre rede e SO</span>
+          <span class="keyword">Sockets = comunicação por TCP/UDP</span>
+          <span class="keyword">RPC = chamada remota como se fosse local</span>
+          <span class="keyword">Client Stub = empacota e envia</span>
+          <span class="keyword">Server Stub / Skeleton = recebe e despacha</span>
+          <span class="keyword">Marshalling = empacotar</span>
+          <span class="keyword">Unmarshalling = desempacotar</span>
+          <span class="keyword">IDL = contrato das interfaces</span>
+          <span class="keyword">At-most-once = no máximo uma execução</span>
+          <span class="keyword">Idempotência = mesma saída em repetição</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz-box" id="quizSection">
+      <div class="section-head">
+        <h3>Questões objetivas</h3>
+        <p>Responda cada questão e revise os erros ao final.</p>
+      </div>
+
+      <div id="quizContainer"></div>
+      <div id="scorePanel" class="score-panel"></div>
+      <div id="reviewErrors" class="review-errors"></div>
+    </section>
+  </main>
+
+  <script>
+    const quizQuestions = [
+      {
+        question: 'Em arquiteturas de Sistemas Distribuídos, o mecanismo de Invocação de Procedimento Remoto (RPC) utiliza componentes específicos para abstrair a comunicação de rede. Qual é a função primária do Client Stub durante uma chamada RPC?',
+        options: [
+          'Executar a lógica de negócio do procedimento no computador remoto.',
+          'Empacotar os parâmetros da função (marshalling) e enviá-los através do sistema de comunicação da rede.',
+          'Alocar espaço na tabela de processos para garantir a exclusão mútua do servidor.',
+          'Gerenciar o escalonador de curto prazo na máquina do servidor.',
+          'Converter threads de usuário em threads de kernel no nó remoto.'
+        ],
+        answer: 1,
+        explanation: 'O Client Stub recebe a chamada local, realiza o marshalling dos parâmetros e envia a requisição remota pela rede.',
+        concept: 'Client Stub / RPC'
+      },
+      {
+        question: 'Quando se desenvolve uma aplicação distribuída heterogênea, onde cliente e servidor podem ser escritos em linguagens diferentes, utiliza-se uma IDL (Interface Definition Language). Qual é sua principal finalidade?',
+        options: [
+          'Substituir os protocolos da camada de transporte TCP/IP por conexões de memória compartilhada.',
+          'Definir as interfaces e assinaturas dos métodos remotos de forma neutra para gerar os stubs correspondentes.',
+          'Garantir que todas as chamadas de rede sejam executadas de forma estritamente síncrona sem overhead.',
+          'Controlar o grau de multiprogramação do servidor distribuído.',
+          'Impedir a ocorrência de condições de corrida na memória principal do cliente.'
+        ],
+        answer: 1,
+        explanation: 'A IDL define a interface remota de forma independente da linguagem, funcionando como contrato entre cliente e servidor.',
+        concept: 'IDL'
+      },
+      {
+        question: 'Considere um sistema de transferência bancária distribuído no qual a rede pode apresentar falhas de duplicação e perda de pacotes. Se o cliente retransmitir uma requisição de débito por falta de confirmação, qual semântica de RPC é estritamente necessária para evitar que o valor seja debitado duas vezes?',
+        options: [
+          'Semântica At-least-once.',
+          'Semântica At-most-once.',
+          'Semântica Best-effort não idempotente.',
+          'Comunicação via memória compartilhada sem locking.',
+          'Troca de contexto assíncrona baseada em IPC local.'
+        ],
+        answer: 1,
+        explanation: 'A semântica At-most-once procura garantir que o procedimento remoto seja executado no máximo uma vez, prevenindo duplicidade.',
+        concept: 'At-most-once'
+      },
+      {
+        question: 'Diferente dos processos tradicionais, threads pertencentes ao mesmo processo compartilham recursos diretamente. Qual das opções apresenta um elemento que é compartilhado entre todas as threads de um mesmo processo?',
+        options: [
+          'O conjunto de registradores do processador.',
+          'A pilha de execução (Stack).',
+          'O contador de programa (Program Counter).',
+          'A seção de dados e as variáveis globais do processo.',
+          'A pilha de chamadas locais das funções ativas.'
+        ],
+        answer: 3,
+        explanation: 'Threads do mesmo processo compartilham código, dados, heap e recursos do sistema operacional; a seção de dados e variáveis globais é parte desse compartilhamento.',
+        concept: 'Threads'
+      },
+      {
+        question: 'Qual afirmação sobre threads está correta de acordo com o material do módulo?',
+        options: [
+          'Cada thread possui um heap exclusivo e um conjunto de dados diferentes para todos os membros do processo.',
+          'Threads do mesmo processo compartilham código, dados, heap e recursos do sistema operacional.',
+          'Uma thread não pode ocorrer dentro de um processo, pois cada processo tem apenas uma linha de execução.',
+          'O contador de programa e os registradores são compartilhados entre todas as threads do processo.',
+          'A stack de cada thread é sempre compartilhada no sistema operacional.'
+        ],
+        answer: 1,
+        explanation: 'Threads do mesmo processo compartilham recursos principais, mas cada uma tem sua própria pilha e contexto de execução.',
+        concept: 'Threads'
+      },
+      {
+        question: 'Qual alternativa melhor descreve o papel do Server Stub ou Skeleton em uma chamada RPC?',
+        options: [
+          'Recebe a chamada local do cliente e gera um código de resposta absoluta para a rede.',
+          'Executa o processo completo no cliente e realiza a lógica de escalonamento do servidor.',
+          'Recebe a requisição remota, faz o unmarshalling e despacha a ação no servidor.',
+          'Troca o estado do processo em memória compartilhada para reduzir o overhead de rede.',
+          'Define o contrato de interface em formato .proto ou .idl.'
+        ],
+        answer: 2,
+        explanation: 'O Server Stub/Skeleton participa do recebimento da requisição remota, desempacota os dados e encaminha a chamada para a implementação correta.',
+        concept: 'Server Stub / Skeleton'
+      },
+      {
+        question: 'O que caracteriza o processo de marshalling em uma comunicação RPC?',
+        options: [
+          'É a transformação dos dados recebidos em uma representação utilizável pelo programa.',
+          'É o processo de empacotar e converter parâmetros para a transmissão pela rede.',
+          'É o ajuste do escalonador para priorizar o servidor em vez do cliente.',
+          'É a etapa de abertura do socket TCP sobre a porta do serviço.',
+          'É o cálculo do número de threads de kernel necessárias ao processo.'
+        ],
+        answer: 1,
+        explanation: 'Marshalling empacota os parâmetros e os converte em um formato adequado à transmissão pela rede.',
+        concept: 'Marshalling'
+      },
+      {
+        question: 'Qual alternativa define corretamente o unmarshalling em uma chamada RPC?',
+        options: [
+          'É a criação de um socket para receber a mensagem remota.',
+          'É a operação de converter os dados recebidos de volta para uma representação utilizável.',
+          'É a escolha do protocolo de transporte entre UDP ou TCP.',
+          'É a duplicação de uma chamada para garantir pelo menos uma execução.',
+          'É a criação da interface usando a IDL.'
+        ],
+        answer: 1,
+        explanation: 'Unmarshalling é o processo inverso: transforma os dados transmitidos em uma representação que pode ser processada pela aplicação.',
+        concept: 'Unmarshalling'
+      },
+      {
+        question: 'Qual é o principal objetivo de uma arquitetura Cliente-Servidor em sistemas distribuídos?',
+        options: [
+          'Garantir que todas as threads sejam gerenciadas no kernel sem nenhuma comunicação de rede.',
+          'Dividir claramente os papéis entre quem faz requisição e quem oferece serviço.',
+          'Eliminar a necessidade de sockets em qualquer projeto distribuído.',
+          'Fazer com que todas as operações sejam idempotentes por definição.',
+          'Substituir completamente o uso de middleware por scripts locais.'
+        ],
+        answer: 1,
+        explanation: 'Na arquitetura Cliente-Servidor, o cliente solicita serviços e o servidor os executa, dividindo claramente os papéis.',
+        concept: 'Cliente-Servidor'
+      },
+      {
+        question: 'Qual das alternativas melhor explica o motivo da idempotência ser importante em chamadas RPC sujeitas a retransmissão?',
+        options: [
+          'Porque o middleware sempre ordena todas as mensagens em ordem cronológica.',
+          'Porque uma operação pode ser executada mais de uma vez e, mesmo assim, produzir o mesmo resultado final.',
+          'Porque o client stub sempre usa sockets TCP com garantia de entrega.',
+          'Porque a arquitetura Peer-to-Peer elimina a necessidade de servidor.',
+          'Porque o IDL substitui o protocolo de transporte do sistema.'
+        ],
+        answer: 1,
+        explanation: 'Em operações com retransmissão, idempotência garante que repetição da mesma ação não altere o resultado final de forma inadequada.',
+        concept: 'Idempotência'
+      },
+      {
+        question: 'Em um contexto distribuído, qual alternativa melhor descreve a relação entre sockets e comunicação em rede?',
+        options: [
+          'Sockets são arquivos de configuração usados para definir a IDL entre cliente e servidor.',
+          'Sockets são uma abstração que permite comunicação por rede TCP/UDP entre processos.',
+          'Sockets substituem o uso de middleware e eliminam a necessidade de RPC.',
+          'Sockets são usados apenas para threads de kernel e não para comunicação entre processos.',
+          'Sockets funcionam como fila de prontos para o servidor escolher qual cliente executa.'
+        ],
+        answer: 1,
+        explanation: 'Sockets permitem a comunicação por rede e funcionam como abstrações de conexão para protocolos como TCP e UDP.',
+        concept: 'Sockets'
+      },
+      {
+        question: 'Qual opção melhor descreve o fluxo geral de uma chamada RPC em termos de componentes?',
+        options: [
+          'Cliente chama diretamente a função no servidor sem qualquer empacotamento ou resposta.',
+          'Client Stub empacota os parâmetros, a rede transmite os dados, o Server Stub/Skeleton desempacota e invoca a operação remota, e a resposta volta ao cliente.',
+          'Middleware decide a fila de prontos e o kernel executa a operação local.',
+          'Thread de usuário chama um socket e passa diretamente para a camada de hardware.',
+          'Client Stub cria a thread de kernel e o Server Stub encerra o processo do cliente.'
+        ],
+        answer: 1,
+        explanation: 'O fluxo típico do RPC envolve empacotamento pelo Client Stub, transmissão pela rede, desempacotamento pelo Server Stub/Skeleton e retorno da resposta.',
+        concept: 'Fluxo de RPC'
+      }
+    ];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const scorePanel = document.getElementById('scorePanel');
+    const reviewErrors = document.getElementById('reviewErrors');
+
+    const state = {
+      currentIndex: 0,
+      selected: Array(quizQuestions.length).fill(null),
+      results: Array(quizQuestions.length).fill(null),
+      showingFeedback: false
+    };
+
+    function getLetter(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function renderQuestion() {
+      const question = quizQuestions[state.currentIndex];
+      const questionNumber = state.currentIndex + 1;
+      const selected = state.selected[state.currentIndex];
+      const result = state.results[state.currentIndex];
+      const correctLetter = getLetter(question.answer);
+
+      const optionsHtml = question.options.map((option, index) => {
+        const checked = selected === index ? 'checked' : '';
+        return `
+          <label class="option-label">
+            <input type="radio" name="q${state.currentIndex}" value="${index}" ${checked} />
+            <span class="option-letter">${getLetter(index)}</span>
+            <span>${option}</span>
+          </label>
+        `;
+      }).join('');
+
+      const feedbackHtml = state.showingFeedback && result !== null
+        ? `
+          <div class="answer-result visible ${result ? 'correct' : 'incorrect'}">
+            <strong>${result ? 'Correto!' : 'Incorreto.'}</strong>
+            <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+            <p><strong>Explicação:</strong> ${question.explanation}</p>
+            <p><strong>Conceito avaliado:</strong> ${question.concept}</p>
+          </div>
+        `
+        : '';
+
+      quizContainer.innerHTML = `
+        <div class="question-card">
+          <h4>Pergunta ${questionNumber} de ${quizQuestions.length}</h4>
+          <p>${question.question}</p>
+          <div class="options">${optionsHtml}</div>
+          ${feedbackHtml}
+          <div class="nav-buttons">
+            <button class="button secondary" type="button" id="prevQuestion" ${state.currentIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button class="button" type="button" id="nextQuestion">${state.showingFeedback ? (state.currentIndex === quizQuestions.length - 1 ? 'Finalizar quiz' : 'Próxima pergunta') : 'Responder'}</button>
+          </div>
+        </div>
+      `;
+
+      const optionInputs = quizContainer.querySelectorAll('input[type="radio"]');
+      optionInputs.forEach(input => {
+        input.addEventListener('change', event => {
+          state.selected[state.currentIndex] = Number(event.target.value);
+        });
+      });
+
+      document.getElementById('prevQuestion').addEventListener('click', () => {
+        if (state.currentIndex > 0) {
+          state.currentIndex -= 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        }
+      });
+
+      document.getElementById('nextQuestion').addEventListener('click', () => {
+        if (!state.showingFeedback) {
+          const current = state.selected[state.currentIndex];
+          if (current === null || current === undefined) {
+            alert('Selecione uma alternativa antes de responder.');
+            return;
+          }
+
+          const goodAnswer = current === question.answer;
+          state.results[state.currentIndex] = goodAnswer;
+          state.showingFeedback = true;
+          renderQuestion();
+          return;
+        }
+
+        if (state.currentIndex < quizQuestions.length - 1) {
+          state.currentIndex += 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      });
+    }
+
+    function showResults() {
+      const total = quizQuestions.length;
+      const correct = state.results.filter(Boolean).length;
+      const errors = total - correct;
+      const percent = Math.round((correct / total) * 100);
+      const performance = percent >= 80 ? 'Excelente!' : percent >= 70 ? 'Bom desempenho!' : percent >= 50 ? 'Você está no caminho certo.' : 'Revise os conceitos principais do módulo.';
+
+      scorePanel.classList.add('visible');
+      scorePanel.innerHTML = `
+        <h3>Resultado do quiz</h3>
+        <p>Você acertou <strong>${correct}</strong> de <strong>${total}</strong> questões — <strong>${percent}%</strong>.</p>
+        <p>Erros: <strong>${errors}</strong></p>
+        <p><strong>${performance}</strong></p>
+      `;
+
+      const wrongQuestions = quizQuestions.filter((q, index) => state.results[index] === false);
+
+      if (wrongQuestions.length > 0) {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          ${wrongQuestions.map((questionItem, idx) => {
+            const originalIndex = quizQuestions.indexOf(questionItem);
+            const selectedValue = state.selected[originalIndex];
+            const selectedLetter = selectedValue === null ? '—' : getLetter(selectedValue);
+            const correctLetter = getLetter(questionItem.answer);
+            return `
+              <div class="review-item">
+                <p><strong>Questão ${originalIndex + 1}</strong></p>
+                <p><strong>Resposta selecionada:</strong> ${selectedLetter}</p>
+                <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+                <p><strong>Explicação:</strong> ${questionItem.explanation}</p>
+              </div>
+            `;
+          }).join('')}
+        `;
+      } else {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          <p>Parabéns! Você acertou todas as questões. Revise o resumo do módulo para reforçar os principais conceitos.</p>
+        `;
+      }
+
+      quizContainer.innerHTML = '<p>Quiz concluído. Abaixo está a sua pontuação e a revisão dos erros.</p>';
+    }
+
+    renderQuestion();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sd_theme_pref', newTheme);
+      document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const savedTheme = localStorage.getItem('sd_theme_pref') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  </script>
+</body>
+</html>

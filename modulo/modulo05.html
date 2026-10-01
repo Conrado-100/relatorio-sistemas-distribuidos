@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Módulo 5 — Tolerância a Falhas, Replicação e Consenso Distribuído</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-secondary: #f1f5f9;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success-color: #16a34a;
+      --success-light: #f0fdf4;
+      --warning-color: #d97706;
+      --warning-light: #fffbeb;
+      --danger-color: #dc2626;
+      --danger-light: #fef2f2;
+      --border-color: #e2e8f0;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-card: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --primary-color: #60a5fa;
+      --primary-hover: #93c5fd;
+      --primary-light: rgba(96, 165, 250, 0.12);
+      --success-color: #4ade80;
+      --success-light: rgba(74, 222, 128, 0.12);
+      --warning-color: #fbbf24;
+      --warning-light: rgba(251, 191, 36, 0.08);
+      --danger-color: #f87171;
+      --danger-light: rgba(248, 113, 113, 0.12);
+      --border-color: #334155;
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    a { color: inherit; }
+    .module-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+    }
+    .main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--primary-color);
+      font-weight: 700;
+      background: var(--primary-light);
+      border-radius: 999px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+    }
+    .brand-info { min-width: 0; }
+    .brand-info h1 {
+      margin: 0;
+      font-size: clamp(1.2rem, 2vw, 1.8rem);
+      line-height: 1.2;
+    }
+    .brand-info p {
+      margin: 4px 0 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .theme-toggle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+    .eyebrow {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 6px 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .hero h2 {
+      margin: 14px 0 12px;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+    }
+    .hero p {
+      color: var(--text-secondary);
+      margin: 0;
+      max-width: 820px;
+    }
+    .grid-two {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem;
+    }
+    .objective-list, .simple-list, .bullet-list {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--text-secondary);
+    }
+    .objective-list li, .simple-list li, .bullet-list li {
+      margin-bottom: 8px;
+    }
+    .mini-stat {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .mini-stat .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-box strong {
+      display: block;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+    section {
+      margin-top: 28px;
+    }
+    .section-head {
+      margin-bottom: 14px;
+    }
+    .section-head h3 {
+      margin: 0 0 6px;
+      font-size: clamp(1.6rem, 2vw, 2rem);
+    }
+    .section-head p {
+      margin: 0;
+      color: var(--text-muted);
+    }
+    .highlight {
+      border-left: 4px solid var(--primary-color);
+      background: var(--primary-light);
+    }
+    .warning {
+      border-left: 4px solid var(--warning-color);
+      background: var(--warning-light);
+    }
+    .success-box {
+      border-left: 4px solid var(--success-color);
+      background: var(--success-light);
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .compare-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-md);
+    }
+    .compare-card h4 {
+      margin: 0 0 10px;
+      color: var(--text-primary);
+    }
+    .mini-box {
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-secondary);
+      border: 1px dashed var(--border-color);
+      margin-top: 10px;
+      color: var(--text-secondary);
+    }
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .stack-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .callout {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--warning-light);
+      border: 1px solid rgba(217, 119, 6, 0.4);
+    }
+    .callout strong {
+      color: var(--warning-color);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .quiz-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+    }
+    .question-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 16px;
+    }
+    .question-card h4 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      background: var(--bg-card);
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      color: var(--text-primary);
+    }
+    .option-label:hover {
+      border-color: var(--primary-color);
+      background: var(--primary-light);
+    }
+    .option-label input {
+      margin-top: 4px;
+      accent-color: var(--primary-color);
+    }
+    .option-letter {
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .answer-result {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      display: none;
+    }
+    .answer-result.visible {
+      display: block;
+    }
+    .answer-result.correct {
+      background: var(--success-light);
+      border: 1px solid rgba(22, 163, 74, 0.3);
+      color: var(--text-primary);
+    }
+    .answer-result.incorrect {
+      background: var(--danger-light);
+      border: 1px solid rgba(220, 38, 38, 0.3);
+      color: var(--text-primary);
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      color: white;
+      background: var(--primary-color);
+    }
+    .button.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    .button:hover {
+      transform: translateY(-1px);
+    }
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .score-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+    .score-panel.visible {
+      display: block;
+    }
+    .score-panel h3 { margin: 0 0 10px; }
+    .review-errors {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 22px;
+      margin-top: 22px;
+      box-shadow: var(--shadow-md);
+    }
+    .review-errors.visible {
+      display: block;
+    }
+    .review-item {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: var(--bg-secondary);
+      margin-top: 14px;
+    }
+    .review-item p {
+      margin: 8px 0;
+      color: var(--text-secondary);
+    }
+    .keyword {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-color);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    @media (max-width: 768px) {
+      .grid-two {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 540px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .mini-stat {
+        grid-template-columns: 1fr 1fr;
+      }
+      .quiz-box, .card, .hero {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <div class="header-inner">
+      <div class="brand">
+        <a class="back-link" href="../index.html">← Voltar ao curso</a>
+        <div class="brand-info">
+          <h1>Módulo 5</h1>
+          <p>Tolerância a Falhas, Replicação e Consenso Distribuído</p>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Alternar modo escuro">🌙</button>
+    </div>
+  </header>
+
+  <main class="module-wrap" data-module="5">
+    <section class="hero">
+      <span class="eyebrow">Sistemas Distribuídos</span>
+      <h2>Tolerância a Falhas, Replicação e Consenso Distribuído</h2>
+      <p>
+        Este módulo apresenta os mecanismos fundamentais para manter um sistema distribuído em funcionamento mesmo diante de falhas em parte de seus componentes.
+        A discussão aborda confiabilidade, disponibilidade, modelos de falha, replicação, consenso, quórum, falhas bizantinas e a forma como a comunicação em grupo e a ordenação total de mensagens ajudam a sustentar a consistência.
+      </p>
+    </section>
+
+    <div class="grid-two">
+      <section class="card">
+        <h3>Objetivos de aprendizagem</h3>
+        <ul class="objective-list">
+          <li>Entender a definição de <strong>Fault Tolerance</strong> e sua importância em sistemas distribuídos.</li>
+          <li>Diferenciar <strong>Reliability</strong> e <strong>Availability</strong>.</li>
+          <li>Reconhecer modelos de falhas como <strong>Crash-Stop</strong>, <strong>Crash-Recovery</strong> e <strong>Byzantine Fault</strong>.</li>
+          <li>Comparar <strong>Primary-Backup Replication</strong> e <strong>Active Replication</strong>.</li>
+          <li>Entender o objetivo de <strong>Consensus</strong>, <strong>Paxos</strong> e <strong>Raft</strong>.</li>
+          <li>Aplicar as regras de <strong>quórum</strong> para tolerar falhas.</li>
+          <li>Compreender <strong>Virtual Synchrony</strong>, <strong>Group Communication</strong> e <strong>Total Order Multicast</strong>.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Resumo rápido</h3>
+        <div class="mini-stat">
+          <div class="stat-box"><strong>Fault Tolerance</strong><span>continua funcionando</span></div>
+          <div class="stat-box"><strong>Reliability</strong><span>sem falha contínua</span></div>
+          <div class="stat-box"><strong>Availability</strong><span>tempo disponível</span></div>
+          <div class="stat-box"><strong>Consensus</strong><span>acordo entre nós</span></div>
+        </div>
+      </section>
+    </div>
+
+    <section>
+      <div class="section-head">
+        <h3>1. Tolerância a falhas</h3>
+        <p>Capacidade de manter o funcionamento correto mesmo com falhas parciais.</p>
+      </div>
+      <div class="card highlight">
+        <p>
+          A <strong>Fault Tolerance</strong> ou tolerância a falhas é a capacidade de um sistema distribuído manter seu funcionamento correto mesmo após a ocorrência de falhas em parte de seus componentes físicos ou de software.
+        </p>
+        <p>
+          Em sistemas críticos, como sistemas de controle aéreo, a tolerância a falhas é essencial porque falhas em alguns nós não podem impedir a continuidade do serviço. Em muitas arquiteturas, réplicas e mecanismos de consenso mantêm a operação mesmo quando parte dos componentes falha.
+        </p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Crash-Stop</h4>
+          <p>O nó para de responder definitivamente e deixa de participar do sistema.</p>
+          <div class="mini-box">Modelo simples de falha: o processo deixa de funcionar de forma permanente.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Crash-Recovery</h4>
+          <p>O nó falha, mas pode reiniciar e tentar retomar a operação.</p>
+          <div class="mini-box">A recuperação exige reinicialização de estado e reconciliação com o restante do sistema.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Byzantine Fault</h4>
+          <p>O nó pode agir de maneira arbitrária, inconsistente ou maliciosa.</p>
+          <div class="mini-box">Pode enviar informações falsas, contraditórias ou divergentes.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Exemplo</h4>
+        <p>
+          Em um sistema de controle aéreo, um servidor pode falhar, mas outros servidores espelhados continuam processando os dados e mantendo a operação. Isso exemplifica como a redundância e a replicação permitem continuação do serviço mesmo em presença de falhas parciais.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>2. Reliability x Availability</h3>
+        <p>Confiabilidade e disponibilidade medem aspectos diferentes do comportamento do sistema.</p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Availability</h4>
+          <p>É a porcentagem de tempo em que o sistema está disponível e operando corretamente.</p>
+          <div class="mini-box">Foca na continuidade de serviço.</div>
+          <div class="mini-box">Exemplo: 99,9% de disponibilidade.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Reliability</h4>
+          <p>É a probabilidade de o sistema funcionar sem falha contínua durante determinado intervalo de tempo.</p>
+          <div class="mini-box">Foca na confiança de operação estável.</div>
+          <div class="mini-box">Exemplo: probabilidade de funcionamento sem falha por 1.000 horas.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Comparação didática</h4>
+        <p>
+          Um sistema pode ser muito disponível em um dado momento, mas ainda assim ter baixa confiabilidade em operações longas. Já um sistema pode ser altamente confiável, mas estar indisponível por longos períodos por causa de manutenção ou falha de infraestrutura. Ambos conceitos são importantes, mas medem dimensões diferentes do serviço.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>3. Replicação passiva</h3>
+        <p>Modelo Primary-Backup: um nó coordena e os demais mantêm cópias.</p>
+      </div>
+      <div class="card warning">
+        <p>
+          A <strong>Primary-Backup Replication</strong> é o modelo de replicação passiva em que apenas o <strong>Primary</strong> executa as requisições do cliente. O Primary propaga as alterações de estado para os <strong>Backups</strong>, que mantêm cópias atualizadas.
+        </p>
+      </div>
+
+      <div class="stack">
+        <div class="stack-item">Cliente</div>
+        <div class="stack-item">↓</div>
+        <div class="stack-item">Primary</div>
+        <div class="stack-item">↓</div>
+        <div class="stack-item">Backups</div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Características</h4>
+        <ul class="simple-list">
+          <li>Apenas o Primary executa as requisições.</li>
+          <li>O Primary propaga as alterações de estado.</li>
+          <li>Os Backups mantêm cópias atualizadas.</li>
+          <li>Há menor consumo de processamento nos backups.</li>
+          <li>Se o Primary falhar, o sistema precisa detectar a falha e promover outro nó.</li>
+          <li>Existe tempo de failover e recuperação.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Exemplo de banco de dados distribuído</h4>
+        <p>
+          Em um banco de dados distribuído, um servidor primário recebe as transações e atualiza o estado. Os backups recebem as alterações e preservam o mesmo estado. Se o Primary falhar, é necessário detectar o problema e eleger um novo nó como coordenador para continuar o serviço.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>4. Replicação ativa</h3>
+        <p>Todas as réplicas executam a mesma requisição na mesma ordem.</p>
+      </div>
+      <div class="card success-box">
+        <p>
+          Na <strong>Active Replication</strong>, todas as réplicas recebem a requisição e executam a operação. Para manter consistência, é necessário garantir que a execução ocorra na mesma ordem em todas as réplicas.
+        </p>
+        <p>
+          Isso normalmente exige ordenação total de mensagens e sincronização da sequência de execução. O custo computacional é maior, mas, em caso de falha de uma réplica, as demais já terão o estado atualizado.
+        </p>
+      </div>
+
+      <div class="stack">
+        <div class="stack-item">Cliente</div>
+        <div class="stack-item">→</div>
+        <div class="stack-item">Réplica 1</div>
+        <div class="stack-item">→</div>
+        <div class="stack-item">Réplica 2</div>
+        <div class="stack-item">→</div>
+        <div class="stack-item">Réplica 3</div>
+      </div>
+
+      <div class="callout">
+        <strong>Diferença essencial</strong>
+        Na replicação passiva, apenas o Primary execute; na ativa, todas executam a mesma operação e o estado precisa permanecer consistente em todas as cópias.
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>5. Consenso distribuído</h3>
+        <p>Permitir que vários processos acordem sobre um valor ou sequência de ações/log.</p>
+      </div>
+      <div class="card highlight">
+        <p>
+          O objetivo do <strong>Consensus</strong> é fazer com que vários processos concordem sobre um valor ou sobre a sequência de ações a serem executadas, mesmo diante de falhas. Esse problema é central em sistemas distribuídos e aparece em protocolos como <strong>Paxos</strong> e <strong>Raft</strong>.
+        </p>
+        <p>
+          Em geral, o consenso envolve eleição de líder, replicação de log e uso de maioria/quórum para garantir que uma decisão seja aceita e preservada.
+        </p>
+      </div>
+
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h4>Paxos</h4>
+          <p>Algoritmo clássico para alcançar consenso em sistemas distribuídos.</p>
+          <div class="mini-box">Foco em acordo com falhas e ausência de líder estável.</div>
+        </div>
+        <div class="compare-card">
+          <h4>Raft</h4>
+          <p>Algoritmo de consenso mais didático e de implementação mais direta.</p>
+          <div class="mini-box">Também usa eleição de líder e replicação de log.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>6. Quórum e tolerância a falhas</h3>
+        <p>Unidades de decisão que exigem maioria para preservar consistência.</p>
+      </div>
+      <div class="card warning">
+        <p>
+          Uma <strong>maioria</strong> ou um <strong>quórum</strong> é a quantidade mínima de nós necessária para tomar ou validar uma decisão sem perder a consistência do sistema. A lógica depende do tipo de falha a ser tolerada.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Falhas Crash-Stop</h4>
+        <p>Para tolerar <strong>f</strong> falhas do tipo <strong>Crash-Stop</strong>, a fórmula é:</p>
+        <div class="callout">
+          <strong>Fórmula</strong>
+          N = 2f + 1
+        </div>
+        <p>Exemplo: se <strong>f = 2</strong>, então <strong>N = 2(2) + 1 = 5</strong>. Portanto, 5 nós são suficientes para tolerar 2 falhas Crash-Stop.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Falhas bizantinas</h4>
+        <p>Para tolerar <strong>f</strong> falhas bizantinas, a fórmula é:</p>
+        <div class="callout">
+          <strong>Fórmula</strong>
+          N = 3f + 1
+        </div>
+        <p>Isso significa que, para tolerar <strong>f</strong> nós defeituosos ou maliciosos, são necessários pelo menos <strong>3f + 1</strong> nós no sistema.</p>
+        <p>Exemplo: para tolerar 1 falha bizantina, o sistema precisa de <strong>4</strong> nós; para tolerar 2 falhas, precisa de <strong>7</strong> nós.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>7. Problema dos Generais Bizantinos</h3>
+        <p>Consenso diante de participantes defeituosos ou maliciosos.</p>
+      </div>
+      <div class="card highlight">
+        <p>
+          O <strong>problema dos Generais Bizantinos</strong> envolve a necessidade de consenso quando alguns participantes podem ser defeituosos ou maliciosos e enviar informações diferentes para diferentes membros do sistema.
+        </p>
+        <p>
+          Falhas bizantinas são mais difíceis do que falhas do tipo <strong>Crash-Stop</strong>, porque o processo defeituoso não apenas deixa de responder; ele pode mentir, enviar dados inconsistentes e agir de maneira contraditória para diferentes participantes.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>8. Sincronia virtual</h3>
+        <p>Abstração de comunicação em grupo com visão consistente de membros e mensagens.</p>
+      </div>
+      <div class="card success-box">
+        <p>
+          A <strong>Sincronia Virtual</strong>, também chamada de <strong>Virtual Synchrony</strong>, é uma abstração de comunicação em grupo que mantém mudanças de membros (<strong>views</strong>) e entrega de mensagens coordenadas entre os participantes.
+        </p>
+        <p>
+          Ela é importante em sistemas distribuídos em que um nó pode falhar enquanto uma mensagem está sendo entregue. Nesse caso, o grupo deve manter uma visão consistente da entrega de mensagens e da mudança de membros. A ideia central está em <strong>Group Communication</strong> e em manter o conjunto de participantes em uma mesma visão de grupo.
+        </p>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h4>Conceitos-chave</h4>
+        <ul class="simple-list">
+          <li><strong>Virtual Synchrony:</strong> conjunto consistente de condições de entrega e visão de membros.</li>
+          <li><strong>Group Communication:</strong> comunicação coordenada entre participantes de um grupo.</li>
+          <li><strong>Total Order Multicast:</strong> entrega de mensagens em ordem total para todos os membros do grupo.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h3>Resumo de revisão</h3>
+      </div>
+      <div class="card">
+        <div style="margin-bottom:12px;">
+          <span class="keyword">Fault Tolerance = manter operação apesar de falhas</span>
+          <span class="keyword">Crash-Stop = para de responder</span>
+          <span class="keyword">Crash-Recovery = reinicia</span>
+          <span class="keyword">Byzantine Fault = comportamento arbitrário</span>
+          <span class="keyword">Reliability = probabilidade de não falhar</span>
+          <span class="keyword">Availability = tempo disponível</span>
+          <span class="keyword">Primary-Backup = apenas o primary executa</span>
+          <span class="keyword">Active Replication = todas executam</span>
+          <span class="keyword">Consensus = acordo entre processos</span>
+          <span class="keyword">Paxos / Raft = protocolos de consenso</span>
+          <span class="keyword">N = 2f + 1 = Crash-Stop</span>
+          <span class="keyword">N = 3f + 1 = Bizantina</span>
+          <span class="keyword">Virtual Synchrony = grupo consistente</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="quiz-box" id="quizSection">
+      <div class="section-head">
+        <h3>Questões objetivas</h3>
+        <p>Responda às 12 questões e revise os erros ao final.</p>
+      </div>
+
+      <div id="quizContainer"></div>
+      <div id="scorePanel" class="score-panel"></div>
+      <div id="reviewErrors" class="review-errors"></div>
+    </section>
+  </main>
+
+  <script>
+    const quizQuestions = [
+      {
+        question: 'Qual definição melhor expressa o conceito de tolerância a falhas em um sistema distribuído?',
+        options: [
+          'Capacidade de aumentar o número de mensagens trocadas entre processos sem afetar a execução.',
+          'Capacidade de manter o funcionamento correto mesmo após falhas em parte de seus componentes físicos ou de software.',
+          'Capacidade de substituir um relógio global por um relógio local em todos os nós.',
+          'Capacidade de impedir que duas réplicas executem a mesma operação ao mesmo tempo.',
+          'Capacidade de ocultar todas as falhas de rede pela transmissão de mensagens sem confirmação.'
+        ],
+        answer: 1,
+        explanation: 'A tolerância a falhas é a capacidade do sistema manter seu funcionamento correto mesmo quando parte de seus componentes falha.',
+        concept: 'Fault Tolerance'
+      },
+      {
+        question: 'Qual modelo de falha é caracterizado por um nó que para de responder definitivamente e deixa de participar do sistema?',
+        options: [
+          'Crash-Recovery',
+          'Crash-Stop',
+          'Byzantine Fault',
+          'Virtual Synchrony',
+          'Total Order Multicast'
+        ],
+        answer: 1,
+        explanation: 'No Crash-Stop, o nó deixa de responder e passa a não participar mais do sistema de forma definitiva.',
+        concept: 'Crash-Stop'
+      },
+      {
+        question: 'Qual alternativa descreve corretamente a falha bizantina?',
+        options: [
+          'O nó falha e reinicia automaticamente sem perder o estado.',
+          'O nó deixa de responder e não pode mais recuperar.',
+          'O nó pode agir de maneira arbitrária, enviar informações falsas ou contraditórias e comprometer o consenso.',
+          'O nó apenas atrasa mensagens sem enviar conteúdo incorreto.',
+          'O nó bloqueia o sistema somente quando o quorum não é alcançado.'
+        ],
+        answer: 2,
+        explanation: 'A falha bizantina é a mais grave, porque o nó pode se comportar de modo arbitrário, malicioso ou inconsistente.',
+        concept: 'Byzantine Fault'
+      },
+      {
+        question: 'Qual afirmação melhor diferencia Availability de Reliability?',
+        options: [
+          'Availability mede a probabilidade de o sistema funcionar sem falhas contínuas; Reliability mede o tempo em que o sistema está disponível.',
+          'Availability mede o percentual de tempo em que o sistema está disponível; Reliability mede a probabilidade de o sistema funcionar sem falha contínua durante um intervalo.',
+          'Availability e Reliability são sinônimos usados em sistemas distribuídos.',
+          'Availability considera apenas falhas de rede; Reliability considera apenas falhas locais.',
+          'Availability depende exclusivamente de quorum; Reliability depende apenas de Paxos.'
+        ],
+        answer: 1,
+        explanation: 'Availability mede disponibilidade operacional, enquanto Reliability mede probabilidade de operação sem falha contínua ao longo de tempo.',
+        concept: 'Reliability vs Availability'
+      },
+      {
+        question: 'No modelo de replicação passiva (Primary-Backup), qual característica é correta?',
+        options: [
+          'Todos os nós executam a requisição e propagam o resultado ao cliente.',
+          'Apenas o Primary executa a requisição e os Backups mantêm cópias atualizadas do estado.',
+          'Os backups são responsáveis por ordenar mensagens para o Primary.',
+          'O cliente somente envia a requisição para os backups e não para o primary.',
+          'O State Machine é descartado a cada failover.'
+        ],
+        answer: 1,
+        explanation: 'Na replicação passiva, o Primary executa a requisição e os Backups mantêm cópias do estado atualizadas por propagação das alterações.',
+        concept: 'Primary-Backup Replication'
+      },
+      {
+        question: 'Qual é a principal diferença entre replicação passiva e replicação ativa?',
+        options: [
+          'Na passiva, todos os nós executam a operação; na ativa, apenas o Primary executa.',
+          'Na ativa, todas as réplicas recebem a requisição e executam a operação; na passiva, apenas o Primary executa a requisição.',
+          'Na ativa, os backups não mantêm o estado; na passiva, todos precisam manter o mesmo log.',
+          'Na passiva, é obrigatório usar Paxos; na ativa, não é necessário.',
+          'Nenhuma diferença prática: ambos usam a mesma abordagem.'
+        ],
+        answer: 1,
+        explanation: 'A diferença essencial é que na replicação ativa todas as réplicas executam a operação, enquanto na passiva apenas o Primary executa e propagação pelo estado é feita para backups.',
+        concept: 'Active vs Passive Replication'
+      },
+      {
+        question: 'Qual é o objetivo principal do consenso distribuído?',
+        options: [
+          'Permitir que um cliente gere o menor número possível de mensagens.',
+          'Garantir que vários processos concordem sobre um valor ou sequência de ações mesmo diante de falhas.',
+          'Reduzir o uso de memória para as réplicas em sistemas ativos.',
+          'Eliminar a necessidade de ordem de mensagens em logs locais.',
+          'Forçar todos os processos a executar o mesmo código sem comunicação.'
+        ],
+        answer: 1,
+        explanation: 'O consenso distribui a decisão entre processos e garante que eles converjam para um valor ou sequência de ações mesmo com falhas.',
+        concept: 'Consensus'
+      },
+      {
+        question: 'Para tolerar f falhas do tipo Crash-Stop, qual fórmula de quórum é correta?',
+        options: [
+          'N = f + 1',
+          'N = 2f + 1',
+          'N = 3f + 1',
+          'N = 2f',
+          'N = f + 2'
+        ],
+        answer: 1,
+        explanation: 'Para Crash-Stop, a regra é N = 2f + 1, sendo necessário um número mínimo de nós para tolerar f falhas.',
+        concept: 'Quorum para Crash-Stop'
+      },
+      {
+        question: 'Para tolerar f falhas bizantinas, quantos nós são necessários no mínimo?',
+        options: [
+          '2f + 1',
+          '3f',
+          '3f + 1',
+          'f + 3',
+          'f + 1'
+        ],
+        answer: 2,
+        explanation: 'A regra para falhas bizantinas é N = 3f + 1, pois o sistema precisa lidar com participantes que podem agir de forma arbitrária.',
+        concept: 'Quorum para falhas bizantinas'
+      },
+      {
+        question: 'Por que o problema dos Generais Bizantinos é mais difícil de resolver do que falhas do tipo Crash-Stop?',
+        options: [
+          'Porque o problema elimina a necessidade de comunicação entre grupos.',
+          'Porque o processo defeituoso não apenas para, mas pode mentir, enviar informações contraditórias e agir de forma arbitrária.',
+          'Porque o problema exige que todos os processos usem a mesma frequência de CPU.',
+          'Porque o problema permite que mensagens sejam esquecidas sem prejudicar a decisão.',
+          'Porque ele considera apenas a latência da rede e não a lógica do consenso.'
+        ],
+        answer: 1,
+        explanation: 'Falhas bizantinas são mais desafiadoras porque o processo defeituoso pode agir de maneira maliciosa e inconsistente, não apenas deixar de responder.',
+        concept: 'Problema dos Generais Bizantinos'
+      },
+      {
+        question: 'Qual é o papel principal da Sincronia Virtual (Virtual Synchrony) em uma comunicação em grupo?',
+        options: [
+          'Garantir que um novo nó sempre execute em modo stand-alone sem depende de outros.',
+          'Manter uma visão consistente sobre mudanças de membros e entrega de mensagens em um grupo.',
+          'Substituir a eleição de líder em protocolos de consenso.',
+          'Proibir qualquer tipo de falha em membros do grupo.',
+          'Remover a necessidade de quorum em qualquer decisão.'
+        ],
+        answer: 1,
+        explanation: 'A Virtual Synchrony mantém visão consistente de membros e coordena a entrega de mensagens para que o grupo continue coerente mesmo diante de falhas.',
+        concept: 'Virtual Synchrony / Group Communication'
+      },
+      {
+        question: 'Qual característica é mais diretamente associada a Group Communication e Total Order Multicast?',
+        options: [
+          'A comunicação é feita em ordem aleatória para reduzir overhead.',
+          'Todas as mensagens devem ser entregues na mesma ordem para todos os membros do grupo.',
+          'O grupo ignora quorum e aceita qualquer decisão local.',
+          'A comunicação em grupo exige apenas uma réplica passiva para funcionar.',
+          'Total Order Multicast elimina qualquer necessidade de consenso.'
+        ],
+        answer: 1,
+        explanation: 'Em Group Communication, a ordenação total das mensagens é importante para que todos os participantes processem a mesma sequência de eventos.',
+        concept: 'Group Communication / Total Order Multicast'
+      },
+    ];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const scorePanel = document.getElementById('scorePanel');
+    const reviewErrors = document.getElementById('reviewErrors');
+
+    const state = {
+      currentIndex: 0,
+      selected: Array(quizQuestions.length).fill(null),
+      results: Array(quizQuestions.length).fill(null),
+      showingFeedback: false
+    };
+
+    function getLetter(index) {
+      return String.fromCharCode(65 + index);
+    }
+
+    function renderQuestion() {
+      const question = quizQuestions[state.currentIndex];
+      const questionNumber = state.currentIndex + 1;
+      const selected = state.selected[state.currentIndex];
+      const result = state.results[state.currentIndex];
+      const correctLetter = getLetter(question.answer);
+
+      const optionsHtml = question.options.map((option, index) => {
+        const checked = selected === index ? 'checked' : '';
+        return `
+          <label class="option-label">
+            <input type="radio" name="q${state.currentIndex}" value="${index}" ${checked} />
+            <span class="option-letter">${getLetter(index)}</span>
+            <span>${option}</span>
+          </label>
+        `;
+      }).join('');
+
+      const feedbackHtml = state.showingFeedback && result !== null
+        ? `
+          <div class="answer-result visible ${result ? 'correct' : 'incorrect'}">
+            <strong>${result ? 'Correto!' : 'Incorreto.'}</strong>
+            <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+            <p><strong>Explicação:</strong> ${question.explanation}</p>
+            <p><strong>Conceito avaliado:</strong> ${question.concept}</p>
+          </div>
+        `
+        : '';
+
+      quizContainer.innerHTML = `
+        <div class="question-card">
+          <h4>Pergunta ${questionNumber} de ${quizQuestions.length}</h4>
+          <p>${question.question}</p>
+          <div class="options">${optionsHtml}</div>
+          ${feedbackHtml}
+          <div class="nav-buttons">
+            <button class="button secondary" type="button" id="prevQuestion" ${state.currentIndex === 0 ? 'disabled' : ''}>Anterior</button>
+            <button class="button" type="button" id="nextQuestion">${state.showingFeedback ? (state.currentIndex === quizQuestions.length - 1 ? 'Finalizar quiz' : 'Próxima pergunta') : 'Responder'}</button>
+          </div>
+        </div>
+      `;
+
+      const optionInputs = quizContainer.querySelectorAll('input[type="radio"]');
+      optionInputs.forEach(input => {
+        input.addEventListener('change', event => {
+          state.selected[state.currentIndex] = Number(event.target.value);
+        });
+      });
+
+      document.getElementById('prevQuestion').addEventListener('click', () => {
+        if (state.currentIndex > 0) {
+          state.currentIndex -= 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        }
+      });
+
+      document.getElementById('nextQuestion').addEventListener('click', () => {
+        if (!state.showingFeedback) {
+          const current = state.selected[state.currentIndex];
+          if (current === null || current === undefined) {
+            alert('Selecione uma alternativa antes de responder.');
+            return;
+          }
+
+          const isCorrect = current === question.answer;
+          state.results[state.currentIndex] = isCorrect;
+          state.showingFeedback = true;
+          renderQuestion();
+          return;
+        }
+
+        if (state.currentIndex < quizQuestions.length - 1) {
+          state.currentIndex += 1;
+          state.showingFeedback = state.results[state.currentIndex] !== null;
+          renderQuestion();
+        } else {
+          showResults();
+        }
+      });
+    }
+
+    function showResults() {
+      const total = quizQuestions.length;
+      const correct = state.results.filter(Boolean).length;
+      const errors = total - correct;
+      const percent = Math.round((correct / total) * 100);
+      const performance = percent >= 80 ? 'Excelente!' : percent >= 70 ? 'Bom desempenho!' : percent >= 50 ? 'Você está no caminho certo.' : 'Revise os conceitos principais do módulo.';
+
+      scorePanel.classList.add('visible');
+      scorePanel.innerHTML = `
+        <h3>Resultado do quiz</h3>
+        <p>Você acertou <strong>${correct}</strong> de <strong>${total}</strong> questões — <strong>${percent}%</strong>.</p>
+        <p>Erros: <strong>${errors}</strong></p>
+        <p><strong>${performance}</strong></p>
+        <div class="nav-buttons" style="margin-top:16px;">
+          <button class="button secondary" type="button" id="restartQuiz">Refazer quiz</button>
+        </div>
+      `;
+
+      const wrongQuestions = quizQuestions.filter((q, index) => state.results[index] === false);
+
+      if (wrongQuestions.length > 0) {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          ${wrongQuestions.map((q) => {
+            const originalIndex = quizQuestions.indexOf(q);
+            const selectedValue = state.selected[originalIndex];
+            const selectedLetter = selectedValue === null ? '—' : getLetter(selectedValue);
+            const correctLetter = getLetter(q.answer);
+            return `
+              <div class="review-item">
+                <p><strong>Questão ${originalIndex + 1}</strong></p>
+                <p><strong>Resposta selecionada:</strong> ${selectedLetter}</p>
+                <p><strong>Resposta correta:</strong> ${correctLetter}</p>
+                <p><strong>Explicação:</strong> ${q.explanation}</p>
+              </div>
+            `;
+          }).join('')}
+        `;
+      } else {
+        reviewErrors.classList.add('visible');
+        reviewErrors.innerHTML = `
+          <h3>Revisão dos erros</h3>
+          <p>Parabéns! Você acertou todas as questões. Revise o resumo do módulo para reforçar os principais conceitos.</p>
+        `;
+      }
+
+      quizContainer.innerHTML = '<p>Quiz concluído. Abaixo está sua pontuação e a revisão dos erros.</p>';
+
+      document.getElementById('restartQuiz').addEventListener('click', () => {
+        state.currentIndex = 0;
+        state.selected = Array(quizQuestions.length).fill(null);
+        state.results = Array(quizQuestions.length).fill(null);
+        state.showingFeedback = false;
+        scorePanel.classList.remove('visible');
+        reviewErrors.classList.remove('visible');
+        renderQuestion();
+      });
+    }
+
+    renderQuestion();
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('sd_theme_pref', newTheme);
+      document.getElementById('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const savedTheme = localStorage.getItem('sd_theme_pref') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  </script>
+</body>
+</html>
